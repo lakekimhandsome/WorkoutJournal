@@ -1,4 +1,4 @@
-Project rules:
+# Project rules:
 
 - SwiftUI only.
 - iOS 26+.
@@ -10,3 +10,9 @@ Project rules:
 - No third-party libraries unless requested.
 - Use MVVM only when necessary.
 - Avoid over-engineering.
+- This app must look like a first-party Apple app.
+- Always prefer native SwiftUI components.
+- Never create custom UI when a system component exists.
+- Prioritize information density and Apple's Human Interface Guidelines.
+- When uncertain, imitate Notes, Reminders, Fitness, or Settings.
+
