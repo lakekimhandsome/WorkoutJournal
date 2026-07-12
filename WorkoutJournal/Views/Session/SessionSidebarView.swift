@@ -45,7 +45,7 @@ private struct SessionRowView: View {
                 .font(.body)
                 .foregroundStyle(.primary)
 
-            Text(session.date, format: .dateTime.month().day().weekday())
+            Text(session.date, format: .sessionList)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
