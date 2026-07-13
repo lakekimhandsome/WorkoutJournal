@@ -3,7 +3,7 @@ import SwiftUI
 struct RootView: View {
     @State private var sessions = MockData.sessions
     @State private var path = NavigationPath()
-    @State private var isSettingsPresented = false
+    @State private var isSettingsPresented = falseq
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -60,6 +60,9 @@ struct RootView: View {
             .sheet(isPresented: $isSettingsPresented) {
                 SettingsView()
             }
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            RestTimerView()
         }
     }
 

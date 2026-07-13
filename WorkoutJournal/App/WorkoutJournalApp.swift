@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct WorkoutJournalApp: App {
+    @State private var timerManager = TimerManager()
+
     var body: some Scene {
         WindowGroup {
             RootView()
+                .environment(timerManager)
         }
     }
 }
