@@ -41,21 +41,21 @@ struct RootView: View {
                     .accessibilityLabel("설정")
                 }
             }
-            .overlay(alignment: .bottomTrailing) {
-                Button {
-                    startNewSession()
-                } label: {
-                    Image(systemName: "square.and.pencil")
-                        .font(.title2)
-                        .foregroundStyle(Color.accentColor)
-                        .frame(width: 52, height: 52)
-                        .background(.regularMaterial, in: Circle())
-                        .shadow(color: .black.opacity(0.12), radius: 6, y: 3)
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                HStack {
+                    Spacer()
+                    Button(action: startNewSession) {
+                        Image(systemName: "square.and.pencil")
+                            .font(.title3.weight(.semibold))
+                    }
+                    .buttonStyle(.glass)
+                    .buttonBorderShape(.circle)
+                    .controlSize(.large)
+                    .accessibilityLabel("새 세션")
                 }
-                .buttonStyle(.plain)
-                .accessibilityLabel("새 세션")
-                .padding(.trailing, 16)
-                .padding(.bottom, 16)
+                .padding(.horizontal, 20)
+                .padding(.top, 8)
+                .padding(.bottom, 4)
             }
             .sheet(isPresented: $isSettingsPresented) {
                 SettingsView()
