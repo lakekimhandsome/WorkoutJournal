@@ -23,10 +23,10 @@ struct SessionDetailView: View {
             }
         }
         .listStyle(.plain)
-        .scrollEdgeEffectStyle(.soft, for: .top)
+        // .scrollEdgeEffectStyle(.soft, for: .top)
         .navigationTitle(session.title)
         .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(.hidden, for: .navigationBar)
+        // .toolbarBackground(.hidden, for: .navigationBar)
     }
 
     private var header: some View {
