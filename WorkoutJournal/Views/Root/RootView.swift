@@ -2,30 +2,35 @@ import SwiftUI
 
 struct RootView: View {
     @State private var sessions = MockData.sessions
+    @State private var path = NavigationPath()
     @State private var isSettingsPresented = false
-    @State private var isNewSessionPresented = false
 
     var body: some View {
-        NavigationStack {
-            List(sessions) { session in
-                NavigationLink {
-                    SessionDetailView(session: session)
-                } label: {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(session.title)
-                        Text(session.date, format: .sessionList)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+        NavigationStack(path: $path) {
+            List {
+                ForEach(sessions) { session in
+                    NavigationLink(value: session.id) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(session.title)
+                            Text(session.date, format: .sessionList)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
                     }
-                }
-                .swipeActions {
-                    Button("삭제", role: .destructive) {
-                        sessions.removeAll { $0.id == session.id }
+                    .swipeActions {
+                        Button("삭제", role: .destructive) {
+                            sessions.removeAll { $0.id == session.id }
+                        }
                     }
                 }
             }
             .navigationTitle("운동일지")
             .navigationSubtitle("\(sessions.count)개의 세션")
+            .navigationDestination(for: WorkoutSession.ID.self) { id in
+                if let index = sessions.firstIndex(where: { $0.id == id }) {
+                    SessionDetailView(session: $sessions[index])
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
@@ -38,7 +43,7 @@ struct RootView: View {
             }
             .overlay(alignment: .bottomTrailing) {
                 Button {
-                    isNewSessionPresented = true
+                    startNewSession()
                 } label: {
                     Image(systemName: "square.and.pencil")
                         .font(.title2)
@@ -55,9 +60,12 @@ struct RootView: View {
             .sheet(isPresented: $isSettingsPresented) {
                 SettingsView()
             }
-            .sheet(isPresented: $isNewSessionPresented) {
-                NewSessionView()
-            }
         }
+    }
+
+    private func startNewSession() {
+        let session = WorkoutSession.new()
+        sessions.insert(session, at: 0)
+        path.append(session.id)
     }
 }

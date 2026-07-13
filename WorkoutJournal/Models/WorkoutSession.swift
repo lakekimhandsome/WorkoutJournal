@@ -7,9 +7,18 @@ import Foundation
 
 struct WorkoutSession: Identifiable, Hashable {
     let id: UUID
-    let title: String
+    var title: String
     let date: Date
-    let notes: String
+    var notes: String
+
+    static func new() -> WorkoutSession {
+        WorkoutSession(
+            id: UUID(),
+            title: "새 세션",
+            date: .now,
+            notes: ""
+        )
+    }
 }
 
 enum MockData {

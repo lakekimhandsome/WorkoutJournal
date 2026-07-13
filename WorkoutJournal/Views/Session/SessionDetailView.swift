@@ -6,7 +6,7 @@
 import SwiftUI
 
 struct SessionDetailView: View {
-    let session: WorkoutSession
+    @Binding var session: WorkoutSession
 
     var body: some View {
         List {
@@ -41,11 +41,10 @@ struct SessionDetailView: View {
             Text("기록")
                 .font(.headline)
 
-            Text(session.notes)
+            TextEditor(text: $session.notes)
                 .font(.body)
-                .foregroundStyle(.primary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .textSelection(.enabled)
+                .frame(minHeight: 120)
+                .scrollContentBackground(.hidden)
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -54,7 +53,9 @@ struct SessionDetailView: View {
 }
 
 #Preview {
+    @Previewable @State var session = MockData.sessions[0]
+
     NavigationStack {
-        SessionDetailView(session: MockData.sessions[0])
+        SessionDetailView(session: $session)
     }
 }

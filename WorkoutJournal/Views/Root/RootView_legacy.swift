@@ -83,8 +83,8 @@ struct RootViewLegacy: View {
     private var mainContent: some View {
         NavigationStack {
             Group {
-                if let selectedSession {
-                    SessionDetailView(session: selectedSession)
+                if let index = sessions.firstIndex(where: { $0.id == selectedSessionID }) {
+                    SessionDetailView(session: $sessions[index])
                 } else {
                     ContentUnavailableView(
                         "세션을 선택하세요",
@@ -134,10 +134,6 @@ struct RootViewLegacy: View {
         DragGesture(minimumDistance: 10, coordinateSpace: .global)
             .onChanged(handleDragChanged)
             .onEnded(handleDragEnded)
-    }
-
-    private var selectedSession: WorkoutSession? {
-        sessions.first { $0.id == selectedSessionID }
     }
 
     private func handleDragChanged(_ value: DragGesture.Value) {
