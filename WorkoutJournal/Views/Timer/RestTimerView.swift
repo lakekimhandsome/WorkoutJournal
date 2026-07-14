@@ -7,88 +7,80 @@ import SwiftUI
 
 struct RestTimerView: View {
     @Environment(TimerManager.self) private var timerManager
+    @Namespace private var timerNamespace
 
     var body: some View {
-        Group {
-            if timerManager.isExpanded {
-                expandedContent
-            } else {
-                compactContent
+        GlassEffectContainer {
+            Group {
+                if timerManager.isExpanded {
+                    expandedContent
+                } else {
+                    compactContent
+                }
             }
         }
-        .glassEffect(.regular, in: .rect(cornerRadius: timerManager.isExpanded ? 20 : 14))
-        .animation(.spring(response: 0.35, dampingFraction: 0.86), value: timerManager.isExpanded)
-        .padding(.horizontal, 16)
-        .padding(.bottom, 8)
+        .geometryGroup()
     }
 
     private var compactContent: some View {
-        HStack(spacing: 12) {
-            Button {
-                withAnimation(.spring(response: 0.35, dampingFraction: 0.86)) {
-                    timerManager.toggleExpanded()
-                }
-            } label: {
-                HStack(spacing: 8) {
-                    Image(systemName: "timer")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.secondary)
-
-                    Text(timerManager.formattedRemainingTime)
-                        .font(.body.monospacedDigit().weight(.semibold))
-                        .foregroundStyle(.primary)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-
-            Button {
-                timerManager.reset()
-            } label: {
-                Image(systemName: "arrow.counterclockwise")
-                    .font(.body.weight(.semibold))
+        ZStack {
+            // Match `.controlSize(.large)` circular glass button height.
+            Button {} label: {
+                Image(systemName: "square.and.pencil")
+                    .font(.title3.weight(.semibold))
             }
             .buttonStyle(.glass)
             .buttonBorderShape(.circle)
-            .controlSize(.regular)
-            .accessibilityLabel("초기화")
+            .controlSize(.large)
+            .hidden()
+            .accessibilityHidden(true)
+
+            HStack(spacing: 10) {
+                Button {
+                    setExpanded(true)
+                } label: {
+                    HStack(spacing: 10) {
+                        Image(systemName: "timer")
+                            .foregroundStyle(.secondary)
+                            .transition(.opacity)
+
+                        timeLabel(font: .body.monospacedDigit().weight(.semibold))
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(.rect)
+                }
+                .buttonStyle(.plain)
+
+                Button {
+                    timerManager.reset()
+                } label: {
+                    Image(systemName: "arrow.counterclockwise")
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("초기화")
+            }
+            .padding(.horizontal, 14)
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
+        .frame(maxWidth: 200)
+        .glassEffect(.regular, in: .capsule)
+        .glassEffectID("restTimer", in: timerNamespace)
+        .matchedGeometryEffect(id: "restTimerChrome", in: timerNamespace)
     }
 
     private var expandedContent: some View {
-        VStack(spacing: 20) {
-            Button {
-                withAnimation(.spring(response: 0.35, dampingFraction: 0.86)) {
-                    timerManager.isExpanded = false
-                }
-            } label: {
-                Capsule()
-                    .fill(.secondary.opacity(0.35))
-                    .frame(width: 36, height: 5)
-                    .padding(.top, 4)
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("접기")
+        VStack(spacing: 16) {
+            timeLabel(font: .largeTitle.monospacedDigit().weight(.semibold))
 
-            Text(timerManager.formattedRemainingTime)
-                .font(.system(size: 52, weight: .light, design: .rounded))
-                .monospacedDigit()
-                .contentTransition(.numericText())
-                .animation(.default, value: timerManager.formattedRemainingTime)
-
-            HStack(spacing: 20) {
+            HStack(spacing: 16) {
                 Button {
                     timerManager.cancel()
                 } label: {
                     Image(systemName: "xmark")
-                        .font(.title3.weight(.semibold))
-                        .frame(width: 48, height: 48)
                 }
                 .buttonStyle(.glass)
                 .buttonBorderShape(.circle)
+                .controlSize(.large)
                 .disabled(!timerManager.isCancelEnabled)
                 .accessibilityLabel("취소")
 
@@ -96,17 +88,32 @@ struct RestTimerView: View {
                     timerManager.performPrimaryAction()
                 } label: {
                     Image(systemName: timerManager.primaryActionIcon)
-                        .font(.title2.weight(.semibold))
-                        .frame(width: 64, height: 64)
                 }
                 .buttonStyle(.glassProminent)
                 .buttonBorderShape(.circle)
+                .controlSize(.large)
                 .accessibilityLabel(primaryActionAccessibilityLabel)
             }
-            .padding(.bottom, 4)
+            .transition(.opacity.combined(with: .scale(0.9)))
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 12)
+        .padding(16)
+        .frame(maxWidth: 220)
+        .glassEffect(.regular, in: .rect(cornerRadius: 22, style: .continuous))
+        .glassEffectID("restTimer", in: timerNamespace)
+        .matchedGeometryEffect(id: "restTimerChrome", in: timerNamespace)
+    }
+
+    private func timeLabel(font: Font) -> some View {
+        Text(timerManager.formattedRemainingTime)
+            .font(font)
+            .contentTransition(.numericText())
+            .matchedGeometryEffect(id: "restTimerTime", in: timerNamespace)
+    }
+
+    private func setExpanded(_ expanded: Bool) {
+        withAnimation(.bouncy) {
+            timerManager.isExpanded = expanded
+        }
     }
 
     private var primaryActionAccessibilityLabel: String {
@@ -121,15 +128,8 @@ struct RestTimerView: View {
     }
 }
 
-#Preview("Compact") {
+#Preview {
     RestTimerView()
         .environment(TimerManager())
-}
-
-#Preview("Expanded") {
-    let manager = TimerManager()
-    manager.isExpanded = true
-
-    return RestTimerView()
-        .environment(manager)
+        .padding()
 }
