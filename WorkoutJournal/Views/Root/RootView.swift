@@ -11,8 +11,9 @@ struct RootView: View {
             List {
                 ForEach(sessions) { session in
                     NavigationLink(value: session.id) {
-                        VStack(alignment: .leading, spacing: 4) {
+                        HStack {
                             Text(session.title)
+                            Spacer(minLength: 8)
                             Text(session.date, format: .sessionList)
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
@@ -33,6 +34,13 @@ struct RootView: View {
                 }
             }
             .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(action: startNewSession) {
+                        Image(systemName: "square.and.pencil")
+                    }
+                    .accessibilityLabel("새 세션")
+                }
+
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         isSettingsPresented = true
@@ -59,38 +67,12 @@ struct RootView: View {
             }
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            bottomBar
-        }
-    }
-
-    private var bottomBar: some View {
-        HStack(alignment: .bottom) {
-            newSessionButton
-                .hidden()
-                .accessibilityHidden(true)
-
-            Spacer(minLength: 0)
-
             RestTimerView()
-
-            Spacer(minLength: 0)
-
-            newSessionButton
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+                .padding(.bottom, 8)
         }
-        .padding(.horizontal, 16)
-        .padding(.top, 8)
-        .padding(.bottom, 8)
-    }
-
-    private var newSessionButton: some View {
-        Button(action: startNewSession) {
-            Image(systemName: "square.and.pencil")
-                .font(.title3.weight(.semibold))
-        }
-        .buttonStyle(.glass)
-        .buttonBorderShape(.circle)
-        .controlSize(.large)
-        .accessibilityLabel("새 세션")
     }
 
     private func startNewSession() {
