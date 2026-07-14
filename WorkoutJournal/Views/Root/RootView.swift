@@ -51,7 +51,7 @@ struct RootView: View {
                 Color.clear
                     .contentShape(.rect)
                     .onTapGesture {
-                        withAnimation(.bouncy) {
+                        withAnimation(.snappy) {
                             timerManager.isExpanded = false
                         }
                     }
