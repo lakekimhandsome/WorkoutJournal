@@ -1,6 +1,6 @@
 //
 //  RestTimerView.swift
-//  WorkoutJournal
+//  WorkoutJournal 
 //
 
 import SwiftUI
