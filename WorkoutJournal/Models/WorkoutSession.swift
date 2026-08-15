@@ -7,7 +7,6 @@ import Foundation
 
 struct WorkoutSession: Identifiable, Hashable {
     let id: UUID
-    var title: String
     let date: Date
     var notes: String
     var exercises: [Exercise]
@@ -15,7 +14,6 @@ struct WorkoutSession: Identifiable, Hashable {
     static func new() -> WorkoutSession {
         WorkoutSession(
             id: UUID(),
-            title: "새 세션",
             date: .now,
             notes: "",
             exercises: []
@@ -27,7 +25,6 @@ enum MockData {
     static let sessions: [WorkoutSession] = [
         WorkoutSession(
             id: UUID(),
-            title: "상체 근력",
             date: .now.addingTimeInterval(-86_400),
             notes: "",
             exercises: [
@@ -65,7 +62,6 @@ enum MockData {
         ),
         WorkoutSession(
             id: UUID(),
-            title: "하체 근력",
             date: .now.addingTimeInterval(-172_800),
             notes: "",
             exercises: [
@@ -91,7 +87,6 @@ enum MockData {
         ),
         WorkoutSession(
             id: UUID(),
-            title: "전신 컨디셔닝",
             date: .now.addingTimeInterval(-259_200),
             notes: "",
             exercises: [

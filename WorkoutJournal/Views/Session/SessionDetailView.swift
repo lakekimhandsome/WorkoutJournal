@@ -11,11 +11,6 @@ struct SessionDetailView: View {
 
     var body: some View {
         List {
-            Section {
-                Text(session.date, format: .dateTime.year().month().day().weekday())
-                    .foregroundStyle(.secondary)
-            }
-
             ForEach($session.exercises) { $exercise in
                 Section {
                     Stepper(value: $exercise.setCount, in: 1...30) {
@@ -48,7 +43,7 @@ struct SessionDetailView: View {
                 }
             }
         }
-        .navigationTitle(session.title)
+        .navigationTitle(session.date.formatted(.dateTime.year().month().day().weekday()))
         .navigationBarTitleDisplayMode(.inline)
     }
 

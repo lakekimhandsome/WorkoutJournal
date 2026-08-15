@@ -40,15 +40,9 @@ private struct SessionRowView: View {
     let session: WorkoutSession
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(session.title)
-                .font(.body)
-                .foregroundStyle(.primary)
-
-            Text(session.date, format: .sessionList)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-        }
+        Text(session.date, format: .dateTime.year().month().day().weekday())
+            .font(.body)
+            .foregroundStyle(.primary)
         .padding(.vertical, 2)
         .frame(maxWidth: .infinity, alignment: .leading)
         .contentShape(Rectangle())

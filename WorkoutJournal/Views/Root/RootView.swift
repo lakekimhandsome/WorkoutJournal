@@ -11,13 +11,7 @@ struct RootView: View {
             List {
                 ForEach(sessions) { session in
                     NavigationLink(value: session.id) {
-                        HStack {
-                            Text(session.title)
-                            Spacer(minLength: 8)
-                            Text(session.date, format: .sessionList)
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
+                        Text(session.date, format: .dateTime.year().month().day().weekday())
                     }
                     .swipeActions {
                         Button("삭제", role: .destructive) {
