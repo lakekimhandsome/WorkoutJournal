@@ -1,0 +1,122 @@
+//
+//  RestTimerLiveActivity.swift
+//  WorkoutJournalLiveActivity
+//
+
+import ActivityKit
+import AppIntents
+import SwiftUI
+import WidgetKit
+
+struct RestTimerLiveActivity: Widget {
+    var body: some WidgetConfiguration {
+        ActivityConfiguration(for: RestTimerAttributes.self) { context in
+            RestTimerLockScreenView(state: context.state)
+                .padding()
+        } dynamicIsland: { context in
+            DynamicIsland {
+                DynamicIslandExpandedRegion(.leading) {
+                    RestTimerIslandButtons(state: context.state)
+                }
+
+                DynamicIslandExpandedRegion(.trailing) {
+                    RestTimerCountdownText(state: context.state)
+                        .font(.title.monospacedDigit().weight(.semibold))
+                        .minimumScaleFactor(0.7)
+                        .multilineTextAlignment(.trailing)
+                }
+            } compactLeading: {
+                Image(systemName: context.state.isCompleted ? "checkmark" : (context.state.isPaused ? "pause.fill" : "timer"))
+            } compactTrailing: {
+                RestTimerCountdownText(state: context.state)
+                    .font(.body.monospacedDigit().weight(.semibold))
+                    .minimumScaleFactor(0.6)
+                    .frame(maxWidth: 56)
+            } minimal: {
+                Image(systemName: context.state.isCompleted ? "checkmark" : (context.state.isPaused ? "pause.fill" : "timer"))
+            }
+        }
+    }
+}
+
+private struct RestTimerLockScreenView: View {
+    let state: RestTimerAttributes.ContentState
+
+    var body: some View {
+        HStack(spacing: 12) {
+            RestTimerIslandButtons(state: state)
+
+            Spacer(minLength: 8)
+
+            RestTimerCountdownText(state: state)
+                .font(.title.monospacedDigit().weight(.semibold))
+                .minimumScaleFactor(0.7)
+                .multilineTextAlignment(.trailing)
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(state.isCompleted ? "휴식 타이머 완료" : (state.isPaused ? "휴식 타이머 일시정지" : "휴식 타이머"))
+    }
+}
+
+private struct RestTimerIslandButtons: View {
+    let state: RestTimerAttributes.ContentState
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Button(intent: ToggleRestTimerIntent()) {
+                Image(systemName: state.isPaused || state.isCompleted ? "play.fill" : "pause.fill")
+            }
+            .tint(.white)
+            .accessibilityLabel(state.isPaused || state.isCompleted ? "재개" : "일시정지")
+
+            Button(intent: CancelRestTimerIntent()) {
+                Image(systemName: "xmark")
+            }
+            .tint(.secondary)
+            .accessibilityLabel("취소")
+        }
+    }
+}
+
+struct RestTimerCountdownText: View {
+    let state: RestTimerAttributes.ContentState
+
+    var body: some View {
+        Text(
+            timerInterval: state.timerRange,
+            pauseTime: state.pauseDate,
+            countsDown: true,
+            showsHours: false
+        )
+        .monospacedDigit()
+        .multilineTextAlignment(.trailing)
+    }
+}
+
+#Preview("Lock Screen", as: .content, using: RestTimerAttributes()) {
+    RestTimerLiveActivity()
+} contentStates: {
+    RestTimerAttributes.ContentState.running(remaining: 5)
+    RestTimerAttributes.ContentState.paused(remaining: 5)
+    RestTimerAttributes.ContentState.completed()
+}
+
+#Preview("Dynamic Island Compact", as: .dynamicIsland(.compact), using: RestTimerAttributes()) {
+    RestTimerLiveActivity()
+} contentStates: {
+    RestTimerAttributes.ContentState.running(remaining: 5)
+}
+
+#Preview("Dynamic Island Minimal", as: .dynamicIsland(.minimal), using: RestTimerAttributes()) {
+    RestTimerLiveActivity()
+} contentStates: {
+    RestTimerAttributes.ContentState.running(remaining: 5)
+}
+
+#Preview("Dynamic Island Expanded", as: .dynamicIsland(.expanded), using: RestTimerAttributes()) {
+    RestTimerLiveActivity()
+} contentStates: {
+    RestTimerAttributes.ContentState.running(remaining: 5)
+    RestTimerAttributes.ContentState.paused(remaining: 5)
+    RestTimerAttributes.ContentState.completed()
+}

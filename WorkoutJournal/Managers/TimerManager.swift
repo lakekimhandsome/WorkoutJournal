@@ -3,11 +3,13 @@
 //  WorkoutJournal
 //
 
+import ActivityKit
 import Foundation
 import Observation
+import UIKit
 
 enum RestTimerConfiguration {
-    static let defaultDuration: TimeInterval = 90
+    static let defaultDuration: TimeInterval = 5
 }
 
 enum RestTimerPhase: Equatable {
@@ -20,6 +22,7 @@ enum RestTimerPhase: Equatable {
 @MainActor
 final class TimerManager {
     static let defaultRestDuration = RestTimerConfiguration.defaultDuration
+    static let shared = TimerManager()
 
     var phase: RestTimerPhase = .idle
     var remainingSeconds: TimeInterval = RestTimerConfiguration.defaultDuration
@@ -27,6 +30,12 @@ final class TimerManager {
 
     private var endDate: Date?
     private var tickTimer: Timer?
+    private var completionTimer: Timer?
+    private var isAppActive = true
+
+    init() {
+        restoreFromLiveActivityIfNeeded()
+    }
 
     var formattedRemainingTime: String {
         Self.format(remainingSeconds)
@@ -62,6 +71,7 @@ final class TimerManager {
         phase = .running
         endDate = Date().addingTimeInterval(remainingSeconds)
         startTicking()
+        RestTimerLiveActivityController.shared.startOrResume(remaining: remainingSeconds)
     }
 
     func pause() {
@@ -72,6 +82,7 @@ final class TimerManager {
             remainingSeconds = max(0, endDate.timeIntervalSinceNow)
         }
         self.endDate = nil
+        RestTimerLiveActivityController.shared.pause(remaining: remainingSeconds)
     }
 
     func resume() {
@@ -84,6 +95,7 @@ final class TimerManager {
         endDate = nil
         phase = .idle
         remainingSeconds = Self.defaultRestDuration
+        RestTimerLiveActivityController.shared.end()
     }
 
     func reset() {
@@ -107,22 +119,89 @@ final class TimerManager {
         start()
     }
 
+    func handleScenePhaseChanged(isActive: Bool) {
+        isAppActive = isActive
+        if isActive {
+            restoreFromLiveActivityIfNeeded()
+        }
+    }
+
+    private func restoreFromLiveActivityIfNeeded() {
+        guard let activity = Activity<RestTimerAttributes>.activities.first else {
+            if phase != .idle {
+                stopTicking()
+                endDate = nil
+                phase = .idle
+                remainingSeconds = Self.defaultRestDuration
+            }
+            return
+        }
+
+        RestTimerLiveActivityController.shared.attach(activity)
+        let state = activity.content.state
+
+        if state.isCompleted {
+            stopTicking()
+            endDate = nil
+            phase = .idle
+            remainingSeconds = Self.defaultRestDuration
+            RestTimerLiveActivityController.shared.end()
+            return
+        }
+
+        if let pauseDate = state.pauseDate {
+            stopTicking()
+            phase = .paused
+            remainingSeconds = max(0, state.endDate.timeIntervalSince(pauseDate))
+            endDate = nil
+            return
+        }
+
+        let remaining = state.endDate.timeIntervalSinceNow
+        if remaining <= 0 {
+            complete()
+            return
+        }
+
+        phase = .running
+        endDate = state.endDate
+        remainingSeconds = remaining
+        if tickTimer == nil {
+            startTicking()
+        }
+    }
+
     private func startTicking() {
         tickTimer?.invalidate()
+        completionTimer?.invalidate()
+
         tickTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             Task { @MainActor in
                 self?.tick()
             }
+        }
+
+        if let endDate {
+            let timer = Timer(fire: endDate, interval: 0, repeats: false) { [weak self] _ in
+                Task { @MainActor in
+                    self?.complete()
+                }
+            }
+            timer.tolerance = 0
+            RunLoop.main.add(timer, forMode: .common)
+            completionTimer = timer
         }
     }
 
     private func stopTicking() {
         tickTimer?.invalidate()
         tickTimer = nil
+        completionTimer?.invalidate()
+        completionTimer = nil
     }
 
     private func tick() {
-        guard let endDate else { return }
+        guard phase == .running, let endDate else { return }
         remainingSeconds = max(0, endDate.timeIntervalSinceNow)
         if remainingSeconds <= 0 {
             complete()
@@ -130,10 +209,26 @@ final class TimerManager {
     }
 
     private func complete() {
+        guard phase == .running else { return }
+
         stopTicking()
-        self.endDate = nil
+        endDate = nil
         phase = .idle
         remainingSeconds = Self.defaultRestDuration
+
+        playCompletionHaptic()
+
+        if isAppActive {
+            RestTimerLiveActivityController.shared.end()
+        } else {
+            RestTimerLiveActivityController.shared.announceCompletion()
+        }
+    }
+
+    private func playCompletionHaptic() {
+        let generator = UINotificationFeedbackGenerator()
+        generator.prepare()
+        generator.notificationOccurred(.success)
     }
 
     private static func format(_ seconds: TimeInterval) -> String {
