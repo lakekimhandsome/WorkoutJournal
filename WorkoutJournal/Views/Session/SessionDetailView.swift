@@ -7,48 +7,60 @@ import SwiftUI
 
 struct SessionDetailView: View {
     @Binding var session: WorkoutSession
+    @State private var newExerciseName = ""
 
     var body: some View {
         List {
             Section {
-                header
-                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color.clear)
+                Text(session.date, format: .dateTime.year().month().day().weekday())
+                    .foregroundStyle(.secondary)
+            }
 
-                notesSection
-                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color.clear)
+            ForEach($session.exercises) { $exercise in
+                Section {
+                    Stepper(value: $exercise.setCount, in: 1...30) {
+                        LabeledContent {
+                            Text("\(exercise.setCount)")
+                                .monospacedDigit()
+                                .foregroundStyle(.secondary)
+                        } label: {
+                            TextField("운동 이름", text: $exercise.name)
+                        }
+                    }
+                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                        Button("삭제", role: .destructive) {
+                            session.exercises.removeAll { $0.id == exercise.id }
+                        }
+                    }
+
+                    TextField("메모 남기기", text: $exercise.notes, axis: .vertical)
+                        .lineLimit(1...4)
+                }
+            }
+
+            Section {
+                HStack {
+                    TextField("운동 이름", text: $newExerciseName)
+                        .onSubmit(addExercise)
+
+                    Button("추가", action: addExercise)
+                        .disabled(!canAddExercise)
+                }
             }
         }
-        .listStyle(.plain)
-        // .scrollEdgeEffectStyle(.soft, for: .top)
         .navigationTitle(session.title)
         .navigationBarTitleDisplayMode(.inline)
-        // .toolbarBackground(.hidden, for: .navigationBar)
     }
 
-    private var header: some View {
-        Text(session.date, format: .dateTime.year().month().day().weekday())
-            .font(.subheadline)
-            .foregroundStyle(.secondary)
-            .frame(maxWidth: .infinity, alignment: .leading)
+    private var canAddExercise: Bool {
+        !newExerciseName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
-    private var notesSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("기록")
-                .font(.headline)
-
-            TextEditor(text: $session.notes)
-                .font(.body)
-                .frame(minHeight: 120)
-                .scrollContentBackground(.hidden)
-        }
-        .padding()
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.background.secondary, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+    private func addExercise() {
+        let name = newExerciseName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !name.isEmpty else { return }
+        session.exercises.append(Exercise(name: name))
+        newExerciseName = ""
     }
 }
 
