@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		75BEBD6A3002121900EA47A9 /* WorkoutJournalLiveActivity.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 75BEBD603002121900EA47A9 /* WorkoutJournalLiveActivity.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		75BEBD803002121900EA47A9 /* WorkoutJournalWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 75BEBD833002121900EA47A9 /* WorkoutJournalWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -17,6 +18,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 75BEBD623002121900EA47A9;
 			remoteInfo = WorkoutJournalLiveActivity;
+		};
+		75BEBD813002121900EA47A9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 75BEBD453002121700EA47A9 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 75BEBD863002121900EA47A9;
+			remoteInfo = WorkoutJournalWatch;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -32,11 +40,23 @@
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		75BEBD823002121900EA47A9 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				75BEBD803002121900EA47A9 /* WorkoutJournalWatch.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		75BEBD4D3002121700EA47A9 /* WorkoutJournal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WorkoutJournal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		75BEBD603002121900EA47A9 /* WorkoutJournalLiveActivity.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WorkoutJournalLiveActivity.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		75BEBD833002121900EA47A9 /* WorkoutJournalWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WorkoutJournalWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -47,7 +67,6 @@
 				Info.plist,
 				RestTimerLiveActivity.swift,
 				RestTimerLiveActivityBundle.swift,
-				WorkoutJournalWidget.swift,
 			);
 			target = 75BEBD4C3002121700EA47A9 /* WorkoutJournal */;
 		};
@@ -75,6 +94,11 @@
 			path = WorkoutJournalLiveActivity;
 			sourceTree = "<group>";
 		};
+		75BEBD843002121900EA47A9 /* WorkoutJournalWatch */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = WorkoutJournalWatch;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,6 +116,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		75BEBD853002121900EA47A9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -100,6 +131,7 @@
 			children = (
 				75BEBD4F3002121700EA47A9 /* WorkoutJournal */,
 				75BEBD613002121900EA47A9 /* WorkoutJournalLiveActivity */,
+				75BEBD843002121900EA47A9 /* WorkoutJournalWatch */,
 				75BEBD4E3002121700EA47A9 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -109,6 +141,7 @@
 			children = (
 				75BEBD4D3002121700EA47A9 /* WorkoutJournal.app */,
 				75BEBD603002121900EA47A9 /* WorkoutJournalLiveActivity.appex */,
+				75BEBD833002121900EA47A9 /* WorkoutJournalWatch.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -124,11 +157,13 @@
 				75BEBD4A3002121700EA47A9 /* Frameworks */,
 				75BEBD4B3002121700EA47A9 /* Resources */,
 				75BEBD693002121900EA47A9 /* Embed Foundation Extensions */,
+				75BEBD823002121900EA47A9 /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				75BEBD6B3002121900EA47A9 /* PBXTargetDependency */,
+				75BEBD893002121900EA47A9 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				75BEBD4F3002121700EA47A9 /* WorkoutJournal */,
@@ -163,6 +198,28 @@
 			productReference = 75BEBD603002121900EA47A9 /* WorkoutJournalLiveActivity.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		75BEBD863002121900EA47A9 /* WorkoutJournalWatch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 75BEBD8C3002121900EA47A9 /* Build configuration list for PBXNativeTarget "WorkoutJournalWatch" */;
+			buildPhases = (
+				75BEBD883002121900EA47A9 /* Sources */,
+				75BEBD853002121900EA47A9 /* Frameworks */,
+				75BEBD873002121900EA47A9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				75BEBD843002121900EA47A9 /* WorkoutJournalWatch */,
+			);
+			name = WorkoutJournalWatch;
+			packageProductDependencies = (
+			);
+			productName = WorkoutJournalWatch;
+			productReference = 75BEBD833002121900EA47A9 /* WorkoutJournalWatch.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -177,6 +234,9 @@
 						CreatedOnToolsVersion = 26.6;
 					};
 					75BEBD623002121900EA47A9 = {
+						CreatedOnToolsVersion = 26.6;
+					};
+					75BEBD863002121900EA47A9 = {
 						CreatedOnToolsVersion = 26.6;
 					};
 				};
@@ -197,6 +257,7 @@
 			targets = (
 				75BEBD4C3002121700EA47A9 /* WorkoutJournal */,
 				75BEBD623002121900EA47A9 /* WorkoutJournalLiveActivity */,
+				75BEBD863002121900EA47A9 /* WorkoutJournalWatch */,
 			);
 		};
 /* End PBXProject section */
@@ -210,6 +271,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		75BEBD653002121900EA47A9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		75BEBD873002121900EA47A9 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -233,6 +301,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		75BEBD883002121900EA47A9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -240,6 +315,11 @@
 			isa = PBXTargetDependency;
 			target = 75BEBD623002121900EA47A9 /* WorkoutJournalLiveActivity */;
 			targetProxy = 75BEBD6C3002121900EA47A9 /* PBXContainerItemProxy */;
+		};
+		75BEBD893002121900EA47A9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 75BEBD863002121900EA47A9 /* WorkoutJournalWatch */;
+			targetProxy = 75BEBD813002121900EA47A9 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -501,6 +581,76 @@
 			};
 			name = Release;
 		};
+		75BEBD8A3002121900EA47A9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = MWM7K8HB42;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "운동일지";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.lakekim.WorkoutJournalSwift;
+				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lakekim.WorkoutJournalSwift.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "watchsimulator watchos";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Debug;
+		};
+		75BEBD8B3002121900EA47A9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = MWM7K8HB42;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "운동일지";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.lakekim.WorkoutJournalSwift;
+				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lakekim.WorkoutJournalSwift.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "watchsimulator watchos";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -527,6 +677,15 @@
 			buildConfigurations = (
 				75BEBD663002121900EA47A9 /* Debug */,
 				75BEBD673002121900EA47A9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		75BEBD8C3002121900EA47A9 /* Build configuration list for PBXNativeTarget "WorkoutJournalWatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				75BEBD8A3002121900EA47A9 /* Debug */,
+				75BEBD8B3002121900EA47A9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
