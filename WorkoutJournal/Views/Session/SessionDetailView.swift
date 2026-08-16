@@ -7,13 +7,14 @@ import SwiftUI
 
 struct SessionDetailView: View {
     @Binding var session: WorkoutSession
+    @Environment(TimerManager.self) private var timerManager
     @State private var newExerciseName = ""
 
     var body: some View {
         List {
             ForEach($session.exercises) { $exercise in
                 Section {
-                    Stepper(value: $exercise.setCount, in: 1...30) {
+                    Stepper {
                         LabeledContent {
                             Text("\(exercise.setCount)")
                                 .monospacedDigit()
@@ -21,6 +22,13 @@ struct SessionDetailView: View {
                         } label: {
                             TextField("운동 이름", text: $exercise.name)
                         }
+                    } onIncrement: {
+                        guard exercise.setCount < 30 else { return }
+                        exercise.setCount += 1
+                        timerManager.startRestAfterSet()
+                    } onDecrement: {
+                        guard exercise.setCount > 1 else { return }
+                        exercise.setCount -= 1
                     }
                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                         Button("삭제", role: .destructive) {
@@ -65,4 +73,5 @@ struct SessionDetailView: View {
     NavigationStack {
         SessionDetailView(session: $session)
     }
+    .environment(TimerManager())
 }

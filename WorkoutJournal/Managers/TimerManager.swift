@@ -113,9 +113,12 @@ final class TimerManager {
         }
     }
 
-    /// Future hook: call after completing a set to auto-start the rest timer.
+    /// Restarts the rest timer after completing a set.
     func startRestAfterSet(duration: TimeInterval = RestTimerConfiguration.defaultDuration) {
-        configure(duration: duration)
+        stopTicking()
+        endDate = nil
+        phase = .idle
+        remainingSeconds = duration
         start()
     }
 
