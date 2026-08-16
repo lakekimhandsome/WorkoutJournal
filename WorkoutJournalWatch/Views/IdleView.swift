@@ -9,6 +9,7 @@ struct IdleView: View {
             .contentShape(Rectangle())
             .onTapGesture {
                 WKInterfaceDevice.current().play(.click)
+                WatchPhoneSyncManager.shared.recordSetIncrement()
             }
             .ignoresSafeArea()
             .accessibilityAddTraits(.isButton)

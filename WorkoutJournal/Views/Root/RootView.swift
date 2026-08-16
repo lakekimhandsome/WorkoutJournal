@@ -2,29 +2,31 @@ import SwiftUI
 
 struct RootView: View {
     @Environment(TimerManager.self) private var timerManager
-    @State private var sessions = MockData.sessions
+    @Environment(SessionStore.self) private var sessionStore
     @State private var path = NavigationPath()
     @State private var isSettingsPresented = false
 
     var body: some View {
+        @Bindable var sessionStore = sessionStore
+
         NavigationStack(path: $path) {
             List {
-                ForEach(sessions) { session in
+                ForEach(sessionStore.sessions) { session in
                     NavigationLink(value: session.id) {
                         Text(session.date, format: .dateTime.year().month().day().weekday())
                     }
                     .swipeActions {
                         Button("삭제", role: .destructive) {
-                            sessions.removeAll { $0.id == session.id }
+                            sessionStore.sessions.removeAll { $0.id == session.id }
                         }
                     }
                 }
             }
             .navigationTitle("운동일지")
-            .navigationSubtitle("\(sessions.count)개의 세션")
+            .navigationSubtitle("\(sessionStore.sessions.count)개의 세션")
             .navigationDestination(for: WorkoutSession.ID.self) { id in
-                if let index = sessions.firstIndex(where: { $0.id == id }) {
-                    SessionDetailView(session: $sessions[index])
+                if let index = sessionStore.sessions.firstIndex(where: { $0.id == id }) {
+                    SessionDetailView(session: $sessionStore.sessions[index])
                 }
             }
             .toolbar {
@@ -71,7 +73,7 @@ struct RootView: View {
 
     private func startNewSession() {
         let session = WorkoutSession.new()
-        sessions.insert(session, at: 0)
+        sessionStore.sessions.insert(session, at: 0)
         path.append(session.id)
     }
 }
