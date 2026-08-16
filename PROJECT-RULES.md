@@ -15,4 +15,4 @@
 - Never create custom UI when a system component exists.
 - Prioritize information density and Apple's Human Interface Guidelines.
 - When uncertain, imitate Notes, Reminders, Fitness, or Settings.
-
+- Must use SF Symbols instead of custom icons
