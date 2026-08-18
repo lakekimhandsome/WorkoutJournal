@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		75BEBD6A3002121900EA47A9 /* WorkoutJournalLiveActivity.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 75BEBD603002121900EA47A9 /* WorkoutJournalLiveActivity.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		75BEBD803002121900EA47A9 /* WorkoutJournalWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 75BEBD833002121900EA47A9 /* WorkoutJournalWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		75BEBD94 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 75BEBD92 /* GoogleSignIn */; };
+		75BEBD95 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 75BEBD93 /* Supabase */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,6 +62,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		75BEBD96 /* Exceptions for "WorkoutJournal" folder in "WorkoutJournal" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 75BEBD4C3002121700EA47A9 /* WorkoutJournal */;
+		};
 		75BEBD6D3002121900EA47A9 /* Exceptions for "WorkoutJournalLiveActivity" folder in "WorkoutJournal" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -82,6 +91,9 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		75BEBD4F3002121700EA47A9 /* WorkoutJournal */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				75BEBD96 /* Exceptions for "WorkoutJournal" folder in "WorkoutJournal" target */,
+			);
 			path = WorkoutJournal;
 			sourceTree = "<group>";
 		};
@@ -106,6 +118,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				75BEBD94 /* GoogleSignIn in Frameworks */,
+				75BEBD95 /* Supabase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -171,6 +185,8 @@
 			);
 			name = WorkoutJournal;
 			packageProductDependencies = (
+				75BEBD93 /* Supabase */,
+				75BEBD92 /* GoogleSignIn */,
 			);
 			productName = WorkoutJournal;
 			productReference = 75BEBD4D3002121700EA47A9 /* WorkoutJournal.app */;
@@ -250,6 +266,10 @@
 			);
 			mainGroup = 75BEBD443002121700EA47A9;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				75BEBD91 /* XCRemoteSwiftPackageReference "supabase-swift" */,
+				75BEBD90 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 75BEBD4E3002121700EA47A9 /* Products */;
 			projectDirPath = "";
@@ -455,6 +475,7 @@
 				DEVELOPMENT_TEAM = MWM7K8HB42;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = WorkoutJournal/Info.plist;
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -489,6 +510,7 @@
 				DEVELOPMENT_TEAM = MWM7K8HB42;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = WorkoutJournal/Info.plist;
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -691,6 +713,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		75BEBD90 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.0.0;
+			};
+		};
+		75BEBD91 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		75BEBD92 /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 75BEBD90 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		75BEBD93 /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 75BEBD91 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 75BEBD453002121700EA47A9 /* Project object */;
 }

@@ -11,10 +11,12 @@ import SwiftUI
 struct WorkoutJournalApp: App {
     @State private var timerManager = TimerManager.shared
     @State private var sessionStore = SessionStore.shared
+    @State private var authManager = AuthManager.shared
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
         _ = PhoneWatchSyncManager.shared
+        AuthManager.shared.start()
     }
 
     var body: some Scene {
@@ -22,6 +24,8 @@ struct WorkoutJournalApp: App {
             RootView()
                 .environment(timerManager)
                 .environment(sessionStore)
+                .environment(authManager)
+                .onOpenURL(perform: authManager.handleOpenURL)
         }
         .onChange(of: scenePhase) { _, newPhase in
             timerManager.handleScenePhaseChanged(isActive: newPhase == .active)
