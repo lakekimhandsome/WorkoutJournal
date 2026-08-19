@@ -116,8 +116,11 @@ private struct DurationWheelPicker: UIViewRepresentable {
             60
         }
 
-        func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-            "\(row)"
+        func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
+            let label = (view as? UILabel) ?? UILabel()
+            label.text = "\(row)"
+            label.textAlignment = .center
+            return label
         }
 
         func pickerView(_ pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat {
