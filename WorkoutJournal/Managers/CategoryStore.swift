@@ -20,7 +20,7 @@ final class CategoryStore {
         currentUserID = userID
 
         do {
-            let rows: [CategoryRecord] = try await SupabaseService.client
+            let rows: [CategoryNameRecord] = try await SupabaseService.client
                 .from("workoutjournal_categories")
                 .select("name")
                 .eq("user_id", value: userID)
@@ -70,7 +70,11 @@ final class CategoryStore {
     }
 }
 
-private struct CategoryRecord: Codable {
+private struct CategoryNameRecord: Decodable {
+    let name: String
+}
+
+private struct CategoryRecord: Encodable {
     let userID: UUID
     let name: String
 
