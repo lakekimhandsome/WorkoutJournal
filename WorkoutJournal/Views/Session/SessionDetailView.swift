@@ -30,6 +30,7 @@ struct SessionDetailView: View {
                         guard exercise.setCount > 1 else { return }
                         exercise.setCount -= 1
                     }
+                    .listRowSeparator(.hidden)
                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                         Button("삭제", role: .destructive) {
                             session.exercises.removeAll { $0.id == exercise.id }
