@@ -4,49 +4,44 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct RestTimerDurationPicker: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var hours: Int
     @State private var minutes: Int
     @State private var seconds: Int
 
     private let onConfirm: (TimeInterval) -> Void
 
     private var selectedDuration: TimeInterval {
-        TimeInterval(hours * 3600 + minutes * 60 + seconds)
+        TimeInterval(minutes * 60 + seconds)
     }
 
     init(duration: TimeInterval, onConfirm: @escaping (TimeInterval) -> Void) {
-        let total = Int(max(0, duration.rounded(.up)))
-        _hours = State(initialValue: min(23, total / 3600))
-        _minutes = State(initialValue: (total % 3600) / 60)
+        let total = min(Int(max(0, duration.rounded(.up))), 59 * 60 + 59)
+        _minutes = State(initialValue: total / 60)
         _seconds = State(initialValue: total % 60)
         self.onConfirm = onConfirm
     }
 
     var body: some View {
         NavigationStack {
-            HStack {
-                Picker("시간", selection: $hours) {
-                    ForEach(0..<24, id: \.self) { value in
-                        Text("\(value)시간").tag(value)
-                    }
-                }
+            VStack {
+                Spacer(minLength: 0)
 
-                Picker("분", selection: $minutes) {
-                    ForEach(0..<60, id: \.self) { value in
-                        Text("\(value)분").tag(value)
-                    }
-                }
+                ZStack {
+                    DurationWheelPicker(minutes: $minutes, seconds: $seconds)
 
-                Picker("초", selection: $seconds) {
-                    ForEach(0..<60, id: \.self) { value in
-                        Text("\(value)초").tag(value)
+                    HStack(spacing: 0) {
+                        unitLabel("분")
+                        unitLabel("초")
                     }
+                    .allowsHitTesting(false)
                 }
+                .frame(height: 216)
+
+                Spacer(minLength: 0)
             }
-            .pickerStyle(.wheel)
             .navigationTitle("시간")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -66,6 +61,72 @@ struct RestTimerDurationPicker: View {
             }
         }
         .presentationDetents([.medium])
+    }
+
+    private func unitLabel(_ unit: String) -> some View {
+        Text(unit)
+            .font(.headline)
+            .offset(x: 22)
+            .frame(maxWidth: .infinity)
+            .accessibilityHidden(true)
+    }
+}
+
+private struct DurationWheelPicker: UIViewRepresentable {
+    @Binding var minutes: Int
+    @Binding var seconds: Int
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(minutes: $minutes, seconds: $seconds)
+    }
+
+    func makeUIView(context: Context) -> UIPickerView {
+        let picker = UIPickerView()
+        picker.dataSource = context.coordinator
+        picker.delegate = context.coordinator
+        picker.selectRow(minutes, inComponent: 0, animated: false)
+        picker.selectRow(seconds, inComponent: 1, animated: false)
+        return picker
+    }
+
+    func updateUIView(_ picker: UIPickerView, context: Context) {
+        context.coordinator.minutes = $minutes
+        context.coordinator.seconds = $seconds
+
+        if picker.selectedRow(inComponent: 0) != minutes {
+            picker.selectRow(minutes, inComponent: 0, animated: false)
+        }
+        if picker.selectedRow(inComponent: 1) != seconds {
+            picker.selectRow(seconds, inComponent: 1, animated: false)
+        }
+    }
+
+    final class Coordinator: NSObject, UIPickerViewDataSource, UIPickerViewDelegate {
+        var minutes: Binding<Int>
+        var seconds: Binding<Int>
+
+        init(minutes: Binding<Int>, seconds: Binding<Int>) {
+            self.minutes = minutes
+            self.seconds = seconds
+        }
+
+        func numberOfComponents(in pickerView: UIPickerView) -> Int { 2 }
+
+        func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+            60
+        }
+
+        func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+            "\(row)"
+        }
+
+        func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+            if component == 0 {
+                minutes.wrappedValue = row
+            } else {
+                seconds.wrappedValue = row
+            }
+        }
     }
 }
 
