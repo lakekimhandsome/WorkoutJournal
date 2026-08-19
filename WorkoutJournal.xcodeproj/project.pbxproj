@@ -62,13 +62,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		75BEBD96 /* Exceptions for "WorkoutJournal" folder in "WorkoutJournal" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = 75BEBD4C3002121700EA47A9 /* WorkoutJournal */;
-		};
 		75BEBD6D3002121900EA47A9 /* Exceptions for "WorkoutJournalLiveActivity" folder in "WorkoutJournal" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -85,6 +78,13 @@
 				Info.plist,
 			);
 			target = 75BEBD623002121900EA47A9 /* WorkoutJournalLiveActivity */;
+		};
+		75BEBD96 /* Exceptions for "WorkoutJournal" folder in "WorkoutJournal" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 75BEBD4C3002121700EA47A9 /* WorkoutJournal */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
