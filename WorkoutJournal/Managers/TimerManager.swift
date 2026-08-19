@@ -21,11 +21,11 @@ enum RestTimerPhase: Equatable {
 @Observable
 @MainActor
 final class TimerManager {
-    static let defaultRestDuration = RestTimerConfiguration.defaultDuration
     static let shared = TimerManager()
 
     var phase: RestTimerPhase = .idle
     var remainingSeconds: TimeInterval = RestTimerConfiguration.defaultDuration
+    var configuredDuration: TimeInterval = RestTimerConfiguration.defaultDuration
     var isExpanded = false
 
     private var endDate: Date?
@@ -58,11 +58,21 @@ final class TimerManager {
         isExpanded.toggle()
     }
 
-    func configure(duration: TimeInterval = RestTimerConfiguration.defaultDuration) {
-        guard phase != .running else { return }
+    func configure(duration: TimeInterval) {
+        let duration = max(1, duration.rounded())
+        configuredDuration = duration
         remainingSeconds = duration
-        if phase == .idle {
+
+        switch phase {
+        case .idle:
             endDate = nil
+        case .paused:
+            endDate = nil
+            RestTimerLiveActivityController.shared.pause(remaining: remainingSeconds)
+        case .running:
+            endDate = Date().addingTimeInterval(remainingSeconds)
+            startTicking()
+            RestTimerLiveActivityController.shared.startOrResume(remaining: remainingSeconds)
         }
     }
 
@@ -94,7 +104,7 @@ final class TimerManager {
         stopTicking()
         endDate = nil
         phase = .idle
-        remainingSeconds = Self.defaultRestDuration
+        remainingSeconds = configuredDuration
         RestTimerLiveActivityController.shared.end()
     }
 
@@ -114,11 +124,11 @@ final class TimerManager {
     }
 
     /// Restarts the rest timer after completing a set.
-    func startRestAfterSet(duration: TimeInterval = RestTimerConfiguration.defaultDuration) {
+    func startRestAfterSet(duration: TimeInterval? = nil) {
         stopTicking()
         endDate = nil
         phase = .idle
-        remainingSeconds = duration
+        remainingSeconds = duration ?? configuredDuration
         start()
     }
 
@@ -135,7 +145,7 @@ final class TimerManager {
                 stopTicking()
                 endDate = nil
                 phase = .idle
-                remainingSeconds = Self.defaultRestDuration
+                remainingSeconds = configuredDuration
             }
             return
         }
@@ -147,7 +157,7 @@ final class TimerManager {
             stopTicking()
             endDate = nil
             phase = .idle
-            remainingSeconds = Self.defaultRestDuration
+            remainingSeconds = configuredDuration
             RestTimerLiveActivityController.shared.end()
             return
         }
@@ -217,7 +227,7 @@ final class TimerManager {
         stopTicking()
         endDate = nil
         phase = .idle
-        remainingSeconds = Self.defaultRestDuration
+        remainingSeconds = configuredDuration
 
         playCompletionHaptic()
 

@@ -7,6 +7,7 @@ import SwiftUI
 
 struct RestTimerView: View {
     @Environment(TimerManager.self) private var timerManager
+    @State private var isDurationPickerPresented = false
 
     private var isExpanded: Bool { timerManager.isExpanded }
 
@@ -33,6 +34,11 @@ struct RestTimerView: View {
         }
         .geometryGroup()
         .animation(.snappy, value: isExpanded)
+        .sheet(isPresented: $isDurationPickerPresented) {
+            RestTimerDurationPicker(duration: timerManager.remainingSeconds) { duration in
+                timerManager.configure(duration: duration)
+            }
+        }
     }
 
     // MARK: - Shared layout
@@ -48,7 +54,9 @@ struct RestTimerView: View {
                 .accessibilityHidden(isExpanded)
 
             Button {
-                if !isExpanded {
+                if isExpanded {
+                    isDurationPickerPresented = true
+                } else {
                     setExpanded(true)
                 }
             } label: {
@@ -64,7 +72,7 @@ struct RestTimerView: View {
             }
             .buttonStyle(.plain)
             .accessibilityLabel("휴식 타이머 \(timerManager.formattedRemainingTime)")
-            .accessibilityHint(isExpanded ? "" : "탭하여 확장")
+            .accessibilityHint(isExpanded ? "탭하여 시간 설정" : "탭하여 확장")
 
             Button {
                 timerManager.reset()
