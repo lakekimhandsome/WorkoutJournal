@@ -8,13 +8,15 @@ import Foundation
 struct WorkoutSession: Identifiable, Hashable {
     let id: UUID
     let date: Date
+    var category: String
     var notes: String
     var exercises: [Exercise]
 
-    static func new() -> WorkoutSession {
+    static func new(category: String) -> WorkoutSession {
         WorkoutSession(
             id: UUID(),
             date: .now,
+            category: category,
             notes: "",
             exercises: []
         )
@@ -26,6 +28,7 @@ enum MockData {
         WorkoutSession(
             id: UUID(),
             date: .now.addingTimeInterval(-86_400),
+            category: "PULL",
             notes: "",
             exercises: [
                 Exercise(
@@ -63,6 +66,7 @@ enum MockData {
         WorkoutSession(
             id: UUID(),
             date: .now.addingTimeInterval(-172_800),
+            category: "LEGS",
             notes: "",
             exercises: [
                 Exercise(
@@ -88,6 +92,7 @@ enum MockData {
         WorkoutSession(
             id: UUID(),
             date: .now.addingTimeInterval(-259_200),
+            category: "PUSH",
             notes: "",
             exercises: [
                 Exercise(

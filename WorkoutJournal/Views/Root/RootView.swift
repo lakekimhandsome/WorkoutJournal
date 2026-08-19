@@ -3,6 +3,7 @@ import SwiftUI
 struct RootView: View {
     @Environment(TimerManager.self) private var timerManager
     @Environment(SessionStore.self) private var sessionStore
+    @Environment(CategoryStore.self) private var categoryStore
     @Environment(AuthManager.self) private var authManager
     @State private var path = NavigationPath()
     @State private var isSettingsPresented = false
@@ -30,7 +31,13 @@ struct RootView: View {
                     List {
                         ForEach(sessionStore.sessions) { session in
                             NavigationLink(value: session.id) {
-                                Text(session.date, format: .dateTime.year().month().day().weekday())
+                                LabeledContent {
+                                    if !session.category.isEmpty {
+                                        Text(session.category)
+                                    }
+                                } label: {
+                                    Text(session.date, format: .dateTime.year().month().day().weekday())
+                                }
                             }
                             .swipeActions {
                                 Button("삭제", role: .destructive) {
@@ -50,10 +57,24 @@ struct RootView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button(action: startNewSession) {
+                    Menu {
+                        if categoryStore.categories.isEmpty {
+                            Button("카테고리 추가") {
+                                isSettingsPresented = true
+                            }
+                        } else {
+                            ForEach(categoryStore.categories, id: \.self) { category in
+                                Button(category) {
+                                    startNewSession(category: category)
+                                }
+                            }
+                        }
+                    } label: {
                         Image(systemName: "square.and.pencil")
                     }
                     .disabled(!authManager.isSignedIn)
+                    .menuIndicator(.hidden)
+                    .menuOrder(.fixed)
                     .accessibilityLabel("새 세션")
                 }
 
@@ -101,8 +122,8 @@ struct RootView: View {
         }
     }
 
-    private func startNewSession() {
-        let session = WorkoutSession.new()
+    private func startNewSession(category: String) {
+        let session = WorkoutSession.new(category: category)
         sessionStore.sessions.insert(session, at: 0)
         path.append(session.id)
     }

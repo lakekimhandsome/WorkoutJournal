@@ -53,6 +53,7 @@ struct SessionDetailView: View {
             }
         }
         .navigationTitle(session.date.formatted(.dateTime.year().month().day().weekday()))
+        .navigationSubtitle(session.category)
         .navigationBarTitleDisplayMode(.inline)
     }
 

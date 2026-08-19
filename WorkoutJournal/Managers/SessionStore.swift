@@ -129,18 +129,20 @@ private struct WorkoutJournalSessionRecord: Codable {
     let id: UUID
     let userID: UUID
     let occurredAt: Date
+    let category: String
     let notes: String
     let exercises: [Exercise]
     let updatedAt: Date
 
     var session: WorkoutSession {
-        WorkoutSession(id: id, date: occurredAt, notes: notes, exercises: exercises)
+        WorkoutSession(id: id, date: occurredAt, category: category, notes: notes, exercises: exercises)
     }
 
     init(session: WorkoutSession, userID: UUID) {
         id = session.id
         self.userID = userID
         occurredAt = session.date
+        category = session.category
         notes = session.notes
         exercises = session.exercises
         updatedAt = .now
@@ -150,6 +152,7 @@ private struct WorkoutJournalSessionRecord: Codable {
         case id
         case userID = "user_id"
         case occurredAt = "occurred_at"
+        case category
         case notes
         case exercises
         case updatedAt = "updated_at"
