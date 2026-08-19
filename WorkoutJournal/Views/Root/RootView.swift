@@ -56,6 +56,14 @@ struct RootView: View {
                 }
             }
             .toolbar {
+                if authManager.isSignedIn {
+                    ToolbarItem(placement: .largeSubtitle) {
+                        Text("\(sessionStore.sessions.count)개의 세션")
+                            .font(.caption.weight(.medium))
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
                         if categoryStore.categories.isEmpty {
