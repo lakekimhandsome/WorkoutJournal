@@ -38,7 +38,7 @@ struct RestTimerDurationPicker: View {
                     }
                     .allowsHitTesting(false)
                 }
-                .frame(height: 216)
+                .frame(width: 240, height: 216)
 
                 Spacer(minLength: 0)
             }
@@ -118,6 +118,10 @@ private struct DurationWheelPicker: UIViewRepresentable {
 
         func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
             "\(row)"
+        }
+
+        func pickerView(_ pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat {
+            pickerView.bounds.width / 2
         }
 
         func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
