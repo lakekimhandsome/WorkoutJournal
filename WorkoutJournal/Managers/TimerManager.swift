@@ -58,24 +58,6 @@ final class TimerManager {
         isExpanded.toggle()
     }
 
-    func configure(duration: TimeInterval) {
-        let duration = max(1, duration.rounded())
-        configuredDuration = duration
-        remainingSeconds = duration
-
-        switch phase {
-        case .idle:
-            endDate = nil
-        case .paused:
-            endDate = nil
-            RestTimerLiveActivityController.shared.pause(remaining: remainingSeconds)
-        case .running:
-            endDate = Date().addingTimeInterval(remainingSeconds)
-            startTicking()
-            RestTimerLiveActivityController.shared.startOrResume(remaining: remainingSeconds)
-        }
-    }
-
     func start() {
         guard phase != .running else { return }
         phase = .running

@@ -7,7 +7,6 @@ import SwiftUI
 
 struct RestTimerView: View {
     @Environment(TimerManager.self) private var timerManager
-    @State private var isDurationPickerPresented = false
 
     private var isExpanded: Bool { timerManager.isExpanded }
 
@@ -34,11 +33,6 @@ struct RestTimerView: View {
         }
         .geometryGroup()
         .animation(.snappy, value: isExpanded)
-        .sheet(isPresented: $isDurationPickerPresented) {
-            RestTimerDurationPicker(duration: timerManager.remainingSeconds) { duration in
-                timerManager.configure(duration: duration)
-            }
-        }
     }
 
     // MARK: - Shared layout
@@ -53,26 +47,8 @@ struct RestTimerView: View {
                 .clipped(when: !isExpanded)
                 .accessibilityHidden(isExpanded)
 
-            Button {
-                if isExpanded {
-                    isDurationPickerPresented = true
-                } else {
-                    setExpanded(true)
-                }
-            } label: {
-                Text(timerManager.formattedRemainingTime)
-                    .font(
-                        isExpanded
-                            ? .largeTitle.monospacedDigit().weight(.semibold)
-                            : .body.monospacedDigit().weight(.semibold)
-                    )
-                    .frame(maxWidth: .infinity, alignment: isExpanded ? .center : .leading)
-                    .contentTransition(.numericText())
-                    .contentShape(.rect)
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("휴식 타이머 \(timerManager.formattedRemainingTime)")
-            .accessibilityHint(isExpanded ? "탭하여 시간 설정" : "탭하여 확장")
+            remainingTime
+                .accessibilityLabel("휴식 타이머 \(timerManager.formattedRemainingTime)")
 
             Button {
                 timerManager.reset()
@@ -88,6 +64,31 @@ struct RestTimerView: View {
             .allowsHitTesting(!isExpanded)
             .accessibilityLabel("초기화")
             .accessibilityHidden(isExpanded)
+        }
+    }
+
+    @ViewBuilder
+    private var remainingTime: some View {
+        let label = Text(timerManager.formattedRemainingTime)
+            .font(
+                isExpanded
+                    ? .largeTitle.monospacedDigit().weight(.semibold)
+                    : .body.monospacedDigit().weight(.semibold)
+            )
+            .frame(maxWidth: .infinity, alignment: isExpanded ? .center : .leading)
+            .contentTransition(.numericText())
+            .contentShape(.rect)
+
+        if isExpanded {
+            label
+        } else {
+            Button {
+                setExpanded(true)
+            } label: {
+                label
+            }
+            .buttonStyle(.plain)
+            .accessibilityHint("탭하여 확장")
         }
     }
 
