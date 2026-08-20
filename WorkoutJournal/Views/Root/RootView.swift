@@ -59,8 +59,9 @@ struct RootView: View {
                 if authManager.isSignedIn {
                     ToolbarItem(placement: .largeSubtitle) {
                         Text("\(sessionStore.sessions.count)개의 세션")
-                            .font(.caption.weight(.medium))
+                            .font(.caption)
                             .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
 
