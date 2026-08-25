@@ -17,13 +17,16 @@ struct RestTimerLiveActivity: Widget {
             DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
                     RestTimerIslandButtons(state: context.state)
+                        .frame(maxHeight: .infinity, alignment: .center)
                 }
 
                 DynamicIslandExpandedRegion(.trailing) {
                     RestTimerCountdownText(state: context.state)
-                        .font(.title.monospacedDigit().weight(.semibold))
-                        .minimumScaleFactor(0.7)
+                        .font(.largeTitle.monospacedDigit().weight(.semibold))
+                        .minimumScaleFactor(0.6)
+                        .lineLimit(1)
                         .multilineTextAlignment(.trailing)
+                        .frame(maxHeight: .infinity, alignment: .center)
                 }
             } compactLeading: {
                 Image(systemName: context.state.isCompleted ? "checkmark" : (context.state.isPaused ? "pause.fill" : "timer"))
@@ -49,8 +52,9 @@ private struct RestTimerLockScreenView: View {
             Spacer(minLength: 8)
 
             RestTimerCountdownText(state: state)
-                .font(.title.monospacedDigit().weight(.semibold))
-                .minimumScaleFactor(0.7)
+                .font(.largeTitle.monospacedDigit().weight(.semibold))
+                .minimumScaleFactor(0.6)
+                .lineLimit(1)
                 .multilineTextAlignment(.trailing)
         }
         .accessibilityElement(children: .contain)
@@ -62,9 +66,10 @@ private struct RestTimerIslandButtons: View {
     let state: RestTimerAttributes.ContentState
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 8) {
             Button(intent: ToggleRestTimerIntent()) {
                 Image(systemName: state.isPaused || state.isCompleted ? "play.fill" : "pause.fill")
+                    .font(.title3.weight(.semibold))
             }
             .buttonBorderShape(.circle)
             .tint(.white)
@@ -72,12 +77,13 @@ private struct RestTimerIslandButtons: View {
 
             Button(intent: CancelRestTimerIntent()) {
                 Image(systemName: "xmark")
+                    .font(.title3.weight(.semibold))
             }
             .buttonBorderShape(.circle)
             .tint(.secondary)
             .accessibilityLabel("취소")
         }
-        .controlSize(.extraLarge)
+        .controlSize(.regular)
         .fixedSize()
     }
 }
