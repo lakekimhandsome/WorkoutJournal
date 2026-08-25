@@ -20,11 +20,7 @@ struct RestTimerLiveActivity: Widget {
                 }
 
                 DynamicIslandExpandedRegion(.trailing) {
-                    RestTimerCountdownText(state: context.state)
-                        .font(.largeTitle.monospacedDigit().weight(.semibold))
-                        .minimumScaleFactor(0.6)
-                        .lineLimit(1)
-                        .multilineTextAlignment(.trailing)
+                    RestTimerLabeledCountdown(state: context.state)
                         .frame(maxHeight: .infinity, alignment: .center)
                 }
             } compactLeading: {
@@ -50,11 +46,7 @@ private struct RestTimerLockScreenView: View {
 
             Spacer(minLength: 8)
 
-            RestTimerCountdownText(state: state)
-                .font(.largeTitle.monospacedDigit().weight(.semibold))
-                .minimumScaleFactor(0.6)
-                .lineLimit(1)
-                .multilineTextAlignment(.trailing)
+            RestTimerLabeledCountdown(state: state)
         }
         .accessibilityElement(children: .contain)
         .accessibilityLabel(state.isCompleted ? "휴식 타이머 완료" : (state.isPaused ? "휴식 타이머 일시정지" : "휴식 타이머"))
@@ -86,6 +78,30 @@ private struct RestTimerIslandButtons: View {
         }
         .controlSize(.large)
         .fixedSize()
+    }
+}
+
+private struct RestTimerLabeledCountdown: View {
+    let state: RestTimerAttributes.ContentState
+
+    var body: some View {
+        HStack(alignment: .lastTextBaseline, spacing: -18) {
+            Text(Locale.current.language.languageCode?.identifier == "ko" ? "휴식" : "Rest")
+                .font(.body)
+                .foregroundStyle(.white)
+
+            Text("59:59")
+                .font(.system(size: 44, weight: .light).monospacedDigit())
+                .hidden()
+                .overlay(alignment: .leading) {
+                    RestTimerCountdownText(state: state)
+                        .font(.system(size: 44, weight: .light).monospacedDigit())
+                        .lineLimit(1)
+                        .offset(x: -3)
+                }
+        }
+        .fixedSize()
+        .padding(.trailing, 10)
     }
 }
 
