@@ -17,7 +17,6 @@ struct RestTimerLiveActivity: Widget {
             DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
                     RestTimerIslandButtons(state: context.state)
-                        .frame(maxHeight: .infinity, alignment: .center)
                 }
 
                 DynamicIslandExpandedRegion(.trailing) {
@@ -26,7 +25,6 @@ struct RestTimerLiveActivity: Widget {
                         .minimumScaleFactor(0.6)
                         .lineLimit(1)
                         .multilineTextAlignment(.trailing)
-                        .frame(maxHeight: .infinity, alignment: .center)
                 }
             } compactLeading: {
                 Image(systemName: context.state.isCompleted ? "checkmark" : (context.state.isPaused ? "pause.fill" : "timer"))
@@ -69,7 +67,8 @@ private struct RestTimerIslandButtons: View {
         HStack(spacing: 8) {
             Button(intent: ToggleRestTimerIntent()) {
                 Image(systemName: state.isPaused || state.isCompleted ? "play.fill" : "pause.fill")
-                    .font(.title3.weight(.semibold))
+                    .font(.title.weight(.semibold))
+                    .padding(-6)
             }
             .buttonBorderShape(.circle)
             .tint(.white)
@@ -77,13 +76,14 @@ private struct RestTimerIslandButtons: View {
 
             Button(intent: CancelRestTimerIntent()) {
                 Image(systemName: "xmark")
-                    .font(.title3.weight(.semibold))
+                    .font(.title.weight(.semibold))
+                    .padding(-6)
             }
             .buttonBorderShape(.circle)
             .tint(.secondary)
             .accessibilityLabel("취소")
         }
-        .controlSize(.regular)
+        .controlSize(.large)
         .fixedSize()
     }
 }
