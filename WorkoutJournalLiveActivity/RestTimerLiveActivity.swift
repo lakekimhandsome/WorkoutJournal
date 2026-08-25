@@ -62,19 +62,23 @@ private struct RestTimerIslandButtons: View {
     let state: RestTimerAttributes.ContentState
 
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 12) {
             Button(intent: ToggleRestTimerIntent()) {
                 Image(systemName: state.isPaused || state.isCompleted ? "play.fill" : "pause.fill")
             }
+            .buttonBorderShape(.circle)
             .tint(.white)
             .accessibilityLabel(state.isPaused || state.isCompleted ? "재개" : "일시정지")
 
             Button(intent: CancelRestTimerIntent()) {
                 Image(systemName: "xmark")
             }
+            .buttonBorderShape(.circle)
             .tint(.secondary)
             .accessibilityLabel("취소")
         }
+        .controlSize(.extraLarge)
+        .fixedSize()
     }
 }
 

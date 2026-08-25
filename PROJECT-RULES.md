@@ -16,3 +16,9 @@
 - Prioritize information density and Apple's Human Interface Guidelines.
 - When uncertain, imitate Notes, Reminders, Fitness, or Settings.
 - Must use SF Symbols instead of custom icons
+
+
+|Do's|Don'ts|
+|---|---|
+|Default SF Symbols|Custom SVG icons|
+|Apple-ish designs|AI-ish designs|
