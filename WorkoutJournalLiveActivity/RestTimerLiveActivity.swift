@@ -25,6 +25,7 @@ struct RestTimerLiveActivity: Widget {
                         .minimumScaleFactor(0.6)
                         .lineLimit(1)
                         .multilineTextAlignment(.trailing)
+                        .frame(maxHeight: .infinity, alignment: .center)
                 }
             } compactLeading: {
                 Image(systemName: context.state.isCompleted ? "checkmark" : (context.state.isPaused ? "pause.fill" : "timer"))
