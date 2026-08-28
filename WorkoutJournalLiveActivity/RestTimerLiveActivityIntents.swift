@@ -8,8 +8,8 @@ import AppIntents
 import Foundation
 
 struct ToggleRestTimerIntent: LiveActivityIntent {
-    static var title: LocalizedStringResource = "일시정지 또는 재개"
-    static var description = IntentDescription("휴식 타이머를 일시정지하거나 재개합니다.")
+    static var title: LocalizedStringResource = "Pause or Resume"
+    static var description = IntentDescription("Pauses or resumes the rest timer.")
     static var isDiscoverable = false
 
     func perform() async throws -> some IntentResult {
@@ -37,8 +37,8 @@ struct ToggleRestTimerIntent: LiveActivityIntent {
 }
 
 struct CancelRestTimerIntent: LiveActivityIntent {
-    static var title: LocalizedStringResource = "취소"
-    static var description = IntentDescription("휴식 타이머를 취소합니다.")
+    static var title: LocalizedStringResource = "Cancel"
+    static var description = IntentDescription("Cancels the rest timer.")
     static var isDiscoverable = false
 
     func perform() async throws -> some IntentResult {

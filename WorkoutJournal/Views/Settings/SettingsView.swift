@@ -4,22 +4,24 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(AuthManager.self) private var authManager
     @Environment(CategoryStore.self) private var categoryStore
+    @Environment(LanguagePreference.self) private var languagePreference
     @State private var newCategoryName = ""
 
     var body: some View {
         @Bindable var authManager = authManager
+        @Bindable var languagePreference = languagePreference
 
         NavigationStack {
             List {
                 Section {
                     if authManager.isSignedIn {
-                        LabeledContent("계정", value: authManager.email ?? "로그인됨")
-                        Button("로그아웃", role: .destructive) {
+                        LabeledContent("Account", value: authManager.email ?? String(localized: "Signed In", locale: languagePreference.locale))
+                        Button("Sign Out", role: .destructive) {
                             Task { await authManager.signOut() }
                         }
                         .disabled(authManager.isBusy)
                     } else {
-                        Button("Google로 로그인") {
+                        Button("Sign in with Google") {
                             Task { await authManager.signInWithGoogle() }
                         }
                         .disabled(authManager.isBusy)
@@ -30,32 +32,43 @@ struct SettingsView: View {
                     }
                 }
 
+                Section {
+                    Picker("Language", selection: $languagePreference.selection) {
+                        Text("Use System Language").tag(AppLanguage.system)
+                        Text(verbatim: "한국어").tag(AppLanguage.korean)
+                        Text(verbatim: "English").tag(AppLanguage.english)
+                    }
+                    .pickerStyle(.navigationLink)
+                } footer: {
+                    Text("The app uses your device language unless you choose a preferred language.")
+                }
+
                 if authManager.isSignedIn {
                     Section {
                         ForEach(categoryStore.categories, id: \.self) { name in
                             Text(name)
                                 .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                    Button("삭제", role: .destructive) {
+                                    Button("Delete", role: .destructive) {
                                         categoryStore.remove(name)
                                     }
                                 }
                         }
 
                         HStack {
-                            TextField("카테고리 이름", text: $newCategoryName)
+                            TextField("Category Name", text: $newCategoryName)
                                 .onSubmit(addCategory)
 
-                            Button("추가", action: addCategory)
+                            Button("Add", action: addCategory)
                                 .disabled(!categoryStore.canAdd(newCategoryName))
                         }
                     } header: {
-                        Text("카테고리")
+                        Text("Categories")
                     } footer: {
-                        Text("PUSH, PULL, LEGS처럼 세션 종류를 추가합니다.")
+                        Text("Add session types like PUSH, PULL, and LEGS.")
                     }
                 }
             }
-            .navigationTitle("설정")
+            .navigationTitle("Settings")
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button(role: .confirm) {
@@ -82,4 +95,5 @@ struct SettingsView: View {
     SettingsView()
         .environment(AuthManager.shared)
         .environment(CategoryStore.shared)
+        .environment(LanguagePreference.shared)
 }

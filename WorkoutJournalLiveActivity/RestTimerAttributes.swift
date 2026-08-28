@@ -7,6 +7,10 @@ import ActivityKit
 import Foundation
 
 struct RestTimerAttributes: ActivityAttributes {
+    var localeIdentifier: String = Locale.autoupdatingCurrent.identifier
+
+    var locale: Locale { Locale(identifier: localeIdentifier) }
+
     struct ContentState: Codable, Hashable {
         var startDate: Date
         var endDate: Date

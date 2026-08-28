@@ -13,6 +13,7 @@ struct WorkoutJournalApp: App {
     @State private var sessionStore = SessionStore.shared
     @State private var categoryStore = CategoryStore.shared
     @State private var authManager = AuthManager.shared
+    @State private var languagePreference = LanguagePreference.shared
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
@@ -27,6 +28,8 @@ struct WorkoutJournalApp: App {
                 .environment(sessionStore)
                 .environment(categoryStore)
                 .environment(authManager)
+                .environment(languagePreference)
+                .environment(\.locale, languagePreference.locale)
                 .onOpenURL(perform: authManager.handleOpenURL)
         }
         .onChange(of: scenePhase) { _, newPhase in

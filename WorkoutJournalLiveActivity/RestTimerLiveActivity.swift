@@ -13,14 +13,17 @@ struct RestTimerLiveActivity: Widget {
         ActivityConfiguration(for: RestTimerAttributes.self) { context in
             RestTimerLockScreenView(state: context.state)
                 .padding()
+                .environment(\.locale, context.attributes.locale)
         } dynamicIsland: { context in
             DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
                     RestTimerIslandButtons(state: context.state)
+                        .environment(\.locale, context.attributes.locale)
                 }
 
                 DynamicIslandExpandedRegion(.trailing) {
                     RestTimerLabeledCountdown(state: context.state)
+                        .environment(\.locale, context.attributes.locale)
                         .frame(maxHeight: .infinity, alignment: .center)
                 }
             } compactLeading: {
@@ -49,7 +52,17 @@ private struct RestTimerLockScreenView: View {
             RestTimerLabeledCountdown(state: state)
         }
         .accessibilityElement(children: .contain)
-        .accessibilityLabel(state.isCompleted ? "휴식 타이머 완료" : (state.isPaused ? "휴식 타이머 일시정지" : "휴식 타이머"))
+        .accessibilityLabel(accessibilityLabel)
+    }
+
+    private var accessibilityLabel: LocalizedStringKey {
+        if state.isCompleted {
+            "Rest timer complete"
+        } else if state.isPaused {
+            "Rest timer paused"
+        } else {
+            "Rest timer"
+        }
     }
 }
 
@@ -65,7 +78,7 @@ private struct RestTimerIslandButtons: View {
             }
             .buttonBorderShape(.circle)
             .tint(.white)
-            .accessibilityLabel(state.isPaused || state.isCompleted ? "재개" : "일시정지")
+            .accessibilityLabel(state.isPaused || state.isCompleted ? LocalizedStringKey("Resume") : LocalizedStringKey("Pause"))
 
             Button(intent: CancelRestTimerIntent()) {
                 Image(systemName: "xmark")
@@ -74,7 +87,7 @@ private struct RestTimerIslandButtons: View {
             }
             .buttonBorderShape(.circle)
             .tint(.secondary)
-            .accessibilityLabel("취소")
+            .accessibilityLabel("Cancel")
         }
         .controlSize(.large)
         .fixedSize()
@@ -86,7 +99,7 @@ private struct RestTimerLabeledCountdown: View {
 
     var body: some View {
         HStack(alignment: .lastTextBaseline, spacing: -18) {
-            Text(Locale.current.language.languageCode?.identifier == "ko" ? "휴식" : "Rest")
+            Text("Rest")
                 .font(.body)
                 .foregroundStyle(.white)
 

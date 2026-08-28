@@ -28,7 +28,7 @@ struct SessionSidebarView: View {
             }
             .listStyle(.plain)
             // .scrollEdgeEffectStyle(.soft, for: .top)
-            .navigationTitle("세션")
+            .navigationTitle("Sessions")
             .navigationBarTitleDisplayMode(.inline)
             // .toolbarBackground(.hidden, for: .navigationBar)
         }

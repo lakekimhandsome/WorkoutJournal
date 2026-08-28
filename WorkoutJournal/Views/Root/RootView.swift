@@ -5,6 +5,7 @@ struct RootView: View {
     @Environment(SessionStore.self) private var sessionStore
     @Environment(CategoryStore.self) private var categoryStore
     @Environment(AuthManager.self) private var authManager
+    @Environment(\.locale) private var locale
     @State private var path = NavigationPath()
     @State private var isSettingsPresented = false
 
@@ -18,11 +19,11 @@ struct RootView: View {
                     ProgressView()
                 } else if !authManager.isSignedIn {
                     ContentUnavailableView {
-                        Label("로그인", systemImage: "person.crop.circle")
+                        Label("Sign In", systemImage: "person.crop.circle")
                     } description: {
-                        Text("Google 계정으로 로그인하면 운동 기록이 저장됩니다.")
+                        Text("Sign in with your Google account to save your workouts.")
                     } actions: {
-                        Button("Google로 로그인") {
+                        Button("Sign in with Google") {
                             Task { await authManager.signInWithGoogle() }
                         }
                         .disabled(authManager.isBusy)
@@ -30,7 +31,7 @@ struct RootView: View {
                 } else {
                     List {
                         ForEach(SessionDateSection.groups(from: sessionStore.sessions)) { group in
-                            Section(group.section.title) {
+                            Section(group.section.title(locale: locale)) {
                                 ForEach(group.sessions) { session in
                                     NavigationLink(value: session.id) {
                                         LabeledContent {
@@ -42,7 +43,7 @@ struct RootView: View {
                                         }
                                     }
                                     .swipeActions {
-                                        Button("삭제", role: .destructive) {
+                                        Button("Delete", role: .destructive) {
                                             sessionStore.remove(id: session.id)
                                         }
                                     }
@@ -52,8 +53,8 @@ struct RootView: View {
                     }
                 }
             }
-            .navigationTitle("운동일지")
-            .navigationSubtitle(authManager.isSignedIn ? "\(sessionStore.sessions.count)개의 세션" : "")
+            .navigationTitle("Workout Journal")
+            .navigationSubtitle(sessionCountSubtitle)
             .navigationDestination(for: WorkoutSession.ID.self) { id in
                 if let index = sessionStore.sessions.firstIndex(where: { $0.id == id }) {
                     SessionDetailView(session: $sessionStore.sessions[index])
@@ -62,7 +63,7 @@ struct RootView: View {
             .toolbar {
                 if authManager.isSignedIn {
                     ToolbarItem(placement: .largeSubtitle) {
-                        Text("\(sessionStore.sessions.count)개의 세션")
+                        Text("\(sessionStore.sessions.count) Sessions")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -72,7 +73,7 @@ struct RootView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
                         if categoryStore.categories.isEmpty {
-                            Button("카테고리 추가") {
+                            Button("Add Category") {
                                 isSettingsPresented = true
                             }
                         } else {
@@ -88,7 +89,7 @@ struct RootView: View {
                     .disabled(!authManager.isSignedIn)
                     .menuIndicator(.hidden)
                     .menuOrder(.fixed)
-                    .accessibilityLabel("새 세션")
+                    .accessibilityLabel("New Session")
                 }
 
                 ToolbarItem(placement: .topBarTrailing) {
@@ -97,17 +98,17 @@ struct RootView: View {
                     } label: {
                         Image(systemName: "gearshape")
                     }
-                    .accessibilityLabel("설정")
+                    .accessibilityLabel("Settings")
                 }
             }
             .sheet(isPresented: $isSettingsPresented) {
                 SettingsView()
             }
-            .alert("로그인", isPresented: Binding(
+            .alert("Sign In", isPresented: Binding(
                 get: { authManager.errorMessage != nil },
                 set: { if !$0 { authManager.errorMessage = nil } }
             )) {
-                Button("확인", role: .cancel) {
+                Button("OK", role: .cancel) {
                     authManager.errorMessage = nil
                 }
             } message: {
@@ -139,5 +140,13 @@ struct RootView: View {
         let session = WorkoutSession.new(category: category)
         sessionStore.sessions.insert(session, at: 0)
         path.append(session.id)
+    }
+
+    private var sessionCountSubtitle: Text {
+        if authManager.isSignedIn {
+            Text("\(sessionStore.sessions.count) Sessions")
+        } else {
+            Text("")
+        }
     }
 }

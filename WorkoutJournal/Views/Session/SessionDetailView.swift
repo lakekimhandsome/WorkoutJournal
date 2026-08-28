@@ -8,6 +8,7 @@ import SwiftUI
 struct SessionDetailView: View {
     @Binding var session: WorkoutSession
     @Environment(TimerManager.self) private var timerManager
+    @Environment(\.locale) private var locale
     @State private var newExerciseName = ""
 
     var body: some View {
@@ -20,7 +21,7 @@ struct SessionDetailView: View {
                                 .monospacedDigit()
                                 .foregroundStyle(.secondary)
                         } label: {
-                            TextField("운동 이름", text: $exercise.name)
+                            TextField("Exercise Name", text: $exercise.name)
                         }
                     } onIncrement: {
                         guard exercise.setCount < 30 else { return }
@@ -32,27 +33,27 @@ struct SessionDetailView: View {
                     }
                     .listRowSeparator(.hidden)
                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                        Button("삭제", role: .destructive) {
+                        Button("Delete", role: .destructive) {
                             session.exercises.removeAll { $0.id == exercise.id }
                         }
                     }
 
-                    TextField("메모 남기기", text: $exercise.notes, axis: .vertical)
+                    TextField("Add a note", text: $exercise.notes, axis: .vertical)
                         .lineLimit(1...4)
                 }
             }
 
             Section {
                 HStack {
-                    TextField("운동 이름", text: $newExerciseName)
+                    TextField("Exercise Name", text: $newExerciseName)
                         .onSubmit(addExercise)
 
-                    Button("추가", action: addExercise)
+                    Button("Add", action: addExercise)
                         .disabled(!canAddExercise)
                 }
             }
         }
-        .navigationTitle(session.date.formatted(.dateTime.year().month().day().weekday()))
+        .navigationTitle(session.date.formatted(.dateTime.year().month().day().weekday().locale(locale)))
         .navigationSubtitle(session.category)
         .navigationBarTitleDisplayMode(.inline)
     }

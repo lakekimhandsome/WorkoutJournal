@@ -20,20 +20,6 @@
                ReferencedContainer = "container:WorkoutJournal.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "75BEBD623002121900EA47A9"
-               BuildableName = "WorkoutJournalLiveActivity.appex"
-               BlueprintName = "WorkoutJournalLiveActivity"
-               ReferencedContainer = "container:WorkoutJournal.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction

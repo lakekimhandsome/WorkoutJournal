@@ -48,7 +48,7 @@ struct RestTimerView: View {
                 .accessibilityHidden(isExpanded)
 
             remainingTime
-                .accessibilityLabel("휴식 타이머 \(timerManager.formattedRemainingTime)")
+                .accessibilityLabel(Text("Rest timer \(timerManager.formattedRemainingTime)"))
 
             Button {
                 timerManager.reset()
@@ -62,7 +62,7 @@ struct RestTimerView: View {
             .frame(width: isExpanded ? 0 : 28)
             .clipped(when: !isExpanded)
             .allowsHitTesting(!isExpanded)
-            .accessibilityLabel("초기화")
+            .accessibilityLabel("Reset")
             .accessibilityHidden(isExpanded)
         }
     }
@@ -88,7 +88,7 @@ struct RestTimerView: View {
                 label
             }
             .buttonStyle(.plain)
-            .accessibilityHint("탭하여 확장")
+            .accessibilityHint("Tap to expand")
         }
     }
 
@@ -103,7 +103,7 @@ struct RestTimerView: View {
             .buttonBorderShape(.circle)
             .controlSize(.large)
             .disabled(!timerManager.isCancelEnabled)
-            .accessibilityLabel("취소")
+            .accessibilityLabel("Cancel")
 
             Button {
                 timerManager.performPrimaryAction()
@@ -143,14 +143,14 @@ struct RestTimerView: View {
         }
     }
 
-    private var primaryActionAccessibilityLabel: String {
+    private var primaryActionAccessibilityLabel: LocalizedStringKey {
         switch timerManager.phase {
         case .idle:
-            "시작"
+            "Start"
         case .running:
-            "일시정지"
+            "Pause"
         case .paused:
-            "재개"
+            "Resume"
         }
     }
 }

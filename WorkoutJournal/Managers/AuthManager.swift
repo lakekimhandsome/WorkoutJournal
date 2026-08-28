@@ -49,7 +49,7 @@ final class AuthManager {
     func signInWithGoogle() async {
         errorMessage = nil
         guard let presentingViewController else {
-            errorMessage = "로그인 화면을 열 수 없습니다."
+            errorMessage = String(localized: "Unable to present sign-in.", locale: LanguagePreference.shared.locale)
             return
         }
 
@@ -61,7 +61,7 @@ final class AuthManager {
                 withPresenting: presentingViewController
             )
             guard let idToken = result.user.idToken?.tokenString else {
-                errorMessage = "Google 계정 정보를 가져오지 못했습니다."
+                errorMessage = String(localized: "Couldn't get Google account information.", locale: LanguagePreference.shared.locale)
                 return
             }
 

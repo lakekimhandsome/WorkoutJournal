@@ -48,8 +48,8 @@ final class RestTimerLiveActivityController {
         let state = RestTimerAttributes.ContentState.completed()
         let content = ActivityContent(state: state, staleDate: nil, relevanceScore: 100)
         let alert = AlertConfiguration(
-            title: LocalizedStringResource("휴식 완료"),
-            body: LocalizedStringResource("휴식 타이머가 끝났습니다."),
+            title: LocalizedStringResource("Rest Complete", locale: LanguagePreference.shared.locale),
+            body: LocalizedStringResource("The rest timer has finished.", locale: LanguagePreference.shared.locale),
             sound: .default
         )
 
@@ -82,7 +82,7 @@ final class RestTimerLiveActivityController {
 
         do {
             activity = try Activity.request(
-                attributes: RestTimerAttributes(),
+                attributes: RestTimerAttributes(localeIdentifier: LanguagePreference.shared.locale.identifier),
                 content: content
             )
         } catch {

@@ -2,4 +2,8 @@
 xcuserdata/
 *.xcuserstate
 .derivedData/
-.DS_Store.DS_Store
+.DS_Store
+
+# Python (Tools/)
+__pycache__/
+*.py[cod]

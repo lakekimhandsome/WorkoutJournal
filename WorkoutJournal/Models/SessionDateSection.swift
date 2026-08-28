@@ -14,22 +14,22 @@ enum SessionDateSection: Hashable, Comparable {
     case month(year: Int, month: Int)
     case year(Int)
 
-    var title: String {
+    func title(locale: Locale = .autoupdatingCurrent) -> String {
         switch self {
         case .today:
-            "오늘"
+            String(localized: "Today", locale: locale)
         case .yesterday:
-            "어제"
+            String(localized: "Yesterday", locale: locale)
         case .previous7Days:
-            "이전 7일"
+            String(localized: "Previous 7 Days", locale: locale)
         case .previous30Days:
-            "이전 30일"
+            String(localized: "Previous 30 Days", locale: locale)
         case .month(let year, let month):
             Self.date(year: year, month: month)
-                .formatted(.dateTime.month(.wide))
+                .formatted(.dateTime.month(.wide).locale(locale))
         case .year(let year):
             Self.date(year: year)
-                .formatted(.dateTime.year())
+                .formatted(.dateTime.year().locale(locale))
         }
     }
 
