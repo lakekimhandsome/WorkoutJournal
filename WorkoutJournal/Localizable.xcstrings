@@ -422,12 +422,12 @@
         }
       }
     },
-    "Workout Journal" : {
+    "Workouts" : {
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "운동일지"
+            "value" : "운동"
           }
         }
       }

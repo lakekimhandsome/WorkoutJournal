@@ -8,13 +8,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Workout Journal"
+            "value" : "Workouts"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "운동일지"
+            "value" : "운동"
           }
         }
       }

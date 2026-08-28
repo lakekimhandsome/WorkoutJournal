@@ -53,7 +53,7 @@ struct RootView: View {
                     }
                 }
             }
-            .navigationTitle("Workout Journal")
+            .navigationTitle("Workouts")
             .navigationSubtitle(sessionCountSubtitle)
             .navigationDestination(for: WorkoutSession.ID.self) { id in
                 if let index = sessionStore.sessions.firstIndex(where: { $0.id == id }) {
