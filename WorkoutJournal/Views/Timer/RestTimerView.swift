@@ -7,6 +7,7 @@ import SwiftUI
 
 struct RestTimerView: View {
     @Environment(TimerManager.self) private var timerManager
+    @State private var isDurationPickerPresented = false
 
     private var isExpanded: Bool { timerManager.isExpanded }
 
@@ -33,6 +34,11 @@ struct RestTimerView: View {
         }
         .geometryGroup()
         .animation(.snappy, value: isExpanded)
+        .sheet(isPresented: $isDurationPickerPresented) {
+            RestTimerDurationPicker(duration: timerManager.remainingSeconds) { duration in
+                timerManager.configure(duration: duration)
+            }
+        }
     }
 
     // MARK: - Shared layout
@@ -49,6 +55,7 @@ struct RestTimerView: View {
 
             remainingTime
                 .accessibilityLabel(Text("Rest timer \(timerManager.formattedRemainingTime)"))
+                .accessibilityHint(isExpanded ? "Tap to set duration" : "Tap to expand")
 
             Button {
                 timerManager.reset()
@@ -67,29 +74,25 @@ struct RestTimerView: View {
         }
     }
 
-    @ViewBuilder
     private var remainingTime: some View {
-        let label = Text(timerManager.formattedRemainingTime)
-            .font(
-                isExpanded
-                    ? .largeTitle.monospacedDigit().weight(.semibold)
-                    : .body.monospacedDigit().weight(.semibold)
-            )
-            .frame(maxWidth: .infinity, alignment: isExpanded ? .center : .leading)
-            .contentTransition(.numericText())
-            .contentShape(.rect)
-
-        if isExpanded {
-            label
-        } else {
-            Button {
+        Button {
+            if isExpanded {
+                isDurationPickerPresented = true
+            } else {
                 setExpanded(true)
-            } label: {
-                label
             }
-            .buttonStyle(.plain)
-            .accessibilityHint("Tap to expand")
+        } label: {
+            Text(timerManager.formattedRemainingTime)
+                .font(
+                    isExpanded
+                        ? .largeTitle.monospacedDigit().weight(.semibold)
+                        : .body.monospacedDigit().weight(.semibold)
+                )
+                .frame(maxWidth: .infinity, alignment: isExpanded ? .center : .leading)
+                .contentTransition(.numericText())
+                .contentShape(.rect)
         }
+        .buttonStyle(.plain)
     }
 
     private var controls: some View {

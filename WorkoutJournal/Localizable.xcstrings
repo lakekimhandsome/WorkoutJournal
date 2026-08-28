@@ -152,6 +152,16 @@
         }
       }
     },
+    "Duration" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "시간"
+          }
+        }
+      }
+    },
     "Exercise Name" : {
       "localizations" : {
         "ko" : {
@@ -168,6 +178,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "언어"
+          }
+        }
+      }
+    },
+    "min" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "분"
+          }
+        }
+      }
+    },
+    "Minutes" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "분"
           }
         }
       }
@@ -282,6 +312,26 @@
         }
       }
     },
+    "sec" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "초"
+          }
+        }
+      }
+    },
+    "Seconds" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "초"
+          }
+        }
+      }
+    },
     "Sessions" : {
       "localizations" : {
         "ko" : {
@@ -368,6 +418,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "탭하여 확장"
+          }
+        }
+      }
+    },
+    "Tap to set duration" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "탭하여 시간 설정"
           }
         }
       }
