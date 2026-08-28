@@ -29,19 +29,23 @@ struct RootView: View {
                     }
                 } else {
                     List {
-                        ForEach(sessionStore.sessions) { session in
-                            NavigationLink(value: session.id) {
-                                LabeledContent {
-                                    if !session.category.isEmpty {
-                                        Text(session.category)
+                        ForEach(SessionDateSection.groups(from: sessionStore.sessions)) { group in
+                            Section(group.section.title) {
+                                ForEach(group.sessions) { session in
+                                    NavigationLink(value: session.id) {
+                                        LabeledContent {
+                                            if !session.category.isEmpty {
+                                                Text(session.category)
+                                            }
+                                        } label: {
+                                            Text(session.date, format: .dateTime.year().month().day().weekday())
+                                        }
                                     }
-                                } label: {
-                                    Text(session.date, format: .dateTime.year().month().day().weekday())
-                                }
-                            }
-                            .swipeActions {
-                                Button("삭제", role: .destructive) {
-                                    sessionStore.remove(id: session.id)
+                                    .swipeActions {
+                                        Button("삭제", role: .destructive) {
+                                            sessionStore.remove(id: session.id)
+                                        }
+                                    }
                                 }
                             }
                         }
