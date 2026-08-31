@@ -15,31 +15,11 @@ struct SessionDetailView: View {
         List {
             ForEach($session.exercises) { $exercise in
                 Section {
-                    Stepper {
-                        LabeledContent {
-                            Text("\(exercise.setCount)")
-                                .monospacedDigit()
-                                .foregroundStyle(.secondary)
-                        } label: {
-                            TextField("Exercise Name", text: $exercise.name)
-                        }
-                    } onIncrement: {
-                        guard exercise.setCount < 30 else { return }
-                        exercise.setCount += 1
+                    ExerciseRow(exercise: $exercise) {
                         timerManager.startRestAfterSet()
-                    } onDecrement: {
-                        guard exercise.setCount > 1 else { return }
-                        exercise.setCount -= 1
+                    } onDelete: {
+                        session.exercises.removeAll { $0.id == exercise.id }
                     }
-                    .listRowSeparator(.hidden)
-                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                        Button("Delete", role: .destructive) {
-                            session.exercises.removeAll { $0.id == exercise.id }
-                        }
-                    }
-
-                    TextField("Add a note", text: $exercise.notes, axis: .vertical)
-                        .lineLimit(1...4)
                 }
             }
 
@@ -67,6 +47,43 @@ struct SessionDetailView: View {
         guard !name.isEmpty else { return }
         session.exercises.append(Exercise(name: name))
         newExerciseName = ""
+    }
+}
+
+private struct ExerciseRow: View {
+    @Binding var exercise: Exercise
+    var onSetIncremented: () -> Void
+    var onDelete: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                TextField("Exercise Name", text: $exercise.name)
+
+                Stepper {
+                    Text("\(exercise.setCount)")
+                        .monospacedDigit()
+                        .foregroundStyle(.secondary)
+                } onIncrement: {
+                    guard exercise.setCount < 30 else { return }
+                    exercise.setCount += 1
+                    onSetIncremented()
+                } onDecrement: {
+                    guard exercise.setCount > 1 else { return }
+                    exercise.setCount -= 1
+                }
+                .fixedSize()
+            }
+
+            TextField("Add a note", text: $exercise.notes, axis: .vertical)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .lineLimit(1...4)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+            Button("Delete", role: .destructive, action: onDelete)
+        }
     }
 }
 
