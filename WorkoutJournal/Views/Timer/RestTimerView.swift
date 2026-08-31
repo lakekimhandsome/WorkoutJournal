@@ -33,6 +33,8 @@ struct RestTimerView: View {
             )
         }
         .geometryGroup()
+        .contentShape(.rect)
+        .highPriorityGesture(expansionGesture)
         .animation(.snappy, value: isExpanded)
         .sheet(isPresented: $isDurationPickerPresented) {
             RestTimerDurationPicker(duration: timerManager.remainingSeconds) { duration in
@@ -55,7 +57,11 @@ struct RestTimerView: View {
 
             remainingTime
                 .accessibilityLabel(Text("Rest timer \(timerManager.formattedRemainingTime)"))
-                .accessibilityHint(isExpanded ? "Tap to set duration" : "Tap to expand")
+                .accessibilityHint(
+                    isExpanded
+                        ? "Tap to set duration. Swipe down to collapse."
+                        : "Tap or swipe up to expand."
+                )
 
             Button {
                 timerManager.reset()
@@ -144,6 +150,29 @@ struct RestTimerView: View {
         withAnimation(.snappy) {
             timerManager.isExpanded = expanded
         }
+    }
+
+    // MARK: - Interactive expansion
+
+    private var expansionGesture: some Gesture {
+        DragGesture(minimumDistance: 8)
+            .onEnded { value in
+                let distance = value.translation
+                let projectedDistance = value.predictedEndTranslation.height
+                guard abs(distance.height) > abs(distance.width) else { return }
+
+                if isExpanded {
+                    guard distance.height > 0 else { return }
+                    if distance.height > 44 || projectedDistance > 72 {
+                        setExpanded(false)
+                    }
+                } else {
+                    guard distance.height < 0 else { return }
+                    if distance.height < -44 || projectedDistance < -72 {
+                        setExpanded(true)
+                    }
+                }
+            }
     }
 
     private var primaryActionAccessibilityLabel: LocalizedStringKey {

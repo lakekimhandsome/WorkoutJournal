@@ -52,6 +52,12 @@ struct RootView: View {
                             }
                         }
                     }
+                    .onScrollPhaseChange { _, newPhase in
+                        if newPhase.isScrolling {
+                            collapseTimer()
+                        }
+                    }
+                    .simultaneousGesture(collapseTimerOnScrollGesture)
                 }
             }
             .navigationTitle("Workouts")
@@ -119,16 +125,12 @@ struct RootView: View {
                 Text(authManager.errorMessage ?? "")
             }
         }
-        .overlay {
-            if timerManager.isExpanded {
-                Color.clear
-                    .contentShape(.rect)
-                    .onTapGesture {
-                        withAnimation(.snappy) {
-                            timerManager.isExpanded = false
-                        }
-                    }
-                    .ignoresSafeArea()
+        .onChange(of: path.count) {
+            collapseTimer()
+        }
+        .onChange(of: isSettingsPresented) { _, isPresented in
+            if isPresented {
+                collapseTimer()
             }
         }
         .onChange(of: isKeyboardPresented) { _, isPresented in
@@ -147,6 +149,21 @@ struct RootView: View {
             }
         }
         .animation(.snappy, value: isKeyboardPresented)
+    }
+
+    private func collapseTimer() {
+        guard timerManager.isExpanded else { return }
+        withAnimation(.snappy) {
+            timerManager.isExpanded = false
+        }
+    }
+
+    private var collapseTimerOnScrollGesture: some Gesture {
+        DragGesture(minimumDistance: 10)
+            .onChanged { value in
+                guard abs(value.translation.height) > abs(value.translation.width) else { return }
+                collapseTimer()
+            }
     }
 
     private func startNewSession(category: String) {

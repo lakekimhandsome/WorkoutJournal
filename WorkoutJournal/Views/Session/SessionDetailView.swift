@@ -86,6 +86,12 @@ struct SessionDetailView: View {
                 }
             }
         }
+        .onScrollPhaseChange { _, newPhase in
+            if newPhase.isScrolling {
+                collapseTimer()
+            }
+        }
+        .simultaneousGesture(collapseTimerOnScrollGesture)
         .scrollDismissesKeyboard(.interactively)
         .navigationTitle(session.date.formatted(.dateTime.year().month().day().weekday().locale(locale)))
         .navigationSubtitle(session.category)
@@ -135,6 +141,21 @@ struct SessionDetailView: View {
                 }
 
                 return lhs.id.uuidString < rhs.id.uuidString
+            }
+    }
+
+    private func collapseTimer() {
+        guard timerManager.isExpanded else { return }
+        withAnimation(.snappy) {
+            timerManager.isExpanded = false
+        }
+    }
+
+    private var collapseTimerOnScrollGesture: some Gesture {
+        DragGesture(minimumDistance: 10)
+            .onChanged { value in
+                guard abs(value.translation.height) > abs(value.translation.width) else { return }
+                collapseTimer()
             }
     }
 
