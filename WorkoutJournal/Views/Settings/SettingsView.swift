@@ -1,11 +1,13 @@
 import SwiftUI
 
 struct SettingsView: View {
+    @Binding var isKeyboardPresented: Bool
     @Environment(\.dismiss) private var dismiss
     @Environment(AuthManager.self) private var authManager
     @Environment(CategoryStore.self) private var categoryStore
     @Environment(LanguagePreference.self) private var languagePreference
     @State private var newCategoryName = ""
+    @FocusState private var isCategoryFieldFocused: Bool
 
     var body: some View {
         @Bindable var authManager = authManager
@@ -56,6 +58,8 @@ struct SettingsView: View {
 
                         HStack {
                             TextField("Category Name", text: $newCategoryName)
+                                .focused($isCategoryFieldFocused)
+                                .submitLabel(.done)
                                 .onSubmit(addCategory)
 
                             Button("Add", action: addCategory)
@@ -68,7 +72,14 @@ struct SettingsView: View {
                     }
                 }
             }
+            .scrollDismissesKeyboard(.interactively)
             .navigationTitle("Settings")
+            .onChange(of: isCategoryFieldFocused) { _, isFocused in
+                isKeyboardPresented = isFocused
+            }
+            .onDisappear {
+                isKeyboardPresented = false
+            }
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button(role: .confirm) {
@@ -88,11 +99,14 @@ struct SettingsView: View {
         guard categoryStore.canAdd(newCategoryName) else { return }
         categoryStore.add(newCategoryName)
         newCategoryName = ""
+        isCategoryFieldFocused = false
     }
 }
 
 #Preview {
-    SettingsView()
+    @Previewable @State var isKeyboardPresented = false
+
+    SettingsView(isKeyboardPresented: $isKeyboardPresented)
         .environment(AuthManager.shared)
         .environment(CategoryStore.shared)
         .environment(LanguagePreference.shared)

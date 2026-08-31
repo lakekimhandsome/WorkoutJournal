@@ -33,10 +33,12 @@ final class AuthManager {
                 if let signedInUser {
                     async let sessions: Void = SessionStore.shared.loadRemote(userID: signedInUser.id)
                     async let categories: Void = CategoryStore.shared.loadRemote(userID: signedInUser.id)
-                    _ = await (sessions, categories)
+                    async let timerSettings: Void = TimerManager.shared.loadRemote(userID: signedInUser.id)
+                    _ = await (sessions, categories, timerSettings)
                 } else {
                     SessionStore.shared.resetLocal()
                     CategoryStore.shared.resetLocal()
+                    TimerManager.shared.resetAccountSettings()
                 }
             }
         }

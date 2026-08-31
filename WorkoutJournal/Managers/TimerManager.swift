@@ -6,6 +6,7 @@
 import ActivityKit
 import Foundation
 import Observation
+import Supabase
 import UIKit
 
 enum RestTimerConfiguration {
@@ -32,6 +33,7 @@ final class TimerManager {
     private var tickTimer: Timer?
     private var completionTimer: Timer?
     private var isAppActive = true
+    private var currentUserID: UUID?
 
     init() {
         restoreFromLiveActivityIfNeeded()
@@ -60,6 +62,46 @@ final class TimerManager {
 
     func configure(duration: TimeInterval) {
         let duration = max(1, duration.rounded())
+        applyConfiguredDuration(duration)
+        persistConfiguredDuration()
+    }
+
+    func loadRemote(userID: UUID) async {
+        currentUserID = userID
+
+        do {
+            let rows: [RestTimerPreferenceRecord] = try await SupabaseService.client
+                .from("workoutjournal_preferences")
+                .select("rest_timer_duration_seconds")
+                .eq("user_id", value: userID)
+                .limit(1)
+                .execute()
+                .value
+
+            guard currentUserID == userID else { return }
+            let duration = rows.first.map { TimeInterval($0.restTimerDurationSeconds) }
+                ?? RestTimerConfiguration.defaultDuration
+            applyStoredDuration(duration)
+        } catch {
+            guard currentUserID == userID else { return }
+            applyStoredDuration(RestTimerConfiguration.defaultDuration)
+        }
+    }
+
+    func resetAccountSettings() {
+        currentUserID = nil
+        applyStoredDuration(RestTimerConfiguration.defaultDuration)
+    }
+
+    private func applyStoredDuration(_ duration: TimeInterval) {
+        configuredDuration = min(max(1, duration.rounded()), 59 * 60 + 59)
+        if phase == .idle {
+            remainingSeconds = configuredDuration
+        }
+    }
+
+    private func applyConfiguredDuration(_ duration: TimeInterval) {
+        let duration = min(max(1, duration.rounded()), 59 * 60 + 59)
         configuredDuration = duration
         remainingSeconds = duration
 
@@ -73,6 +115,22 @@ final class TimerManager {
             endDate = Date().addingTimeInterval(remainingSeconds)
             startTicking()
             RestTimerLiveActivityController.shared.startOrResume(remaining: remainingSeconds)
+        }
+    }
+
+    private func persistConfiguredDuration() {
+        guard let currentUserID else { return }
+        let record = RestTimerPreferenceUpsert(
+            userID: currentUserID,
+            restTimerDurationSeconds: Int(configuredDuration),
+            updatedAt: .now
+        )
+
+        Task {
+            try? await SupabaseService.client
+                .from("workoutjournal_preferences")
+                .upsert(record)
+                .execute()
         }
     }
 
@@ -249,5 +307,25 @@ final class TimerManager {
         let minutes = total / 60
         let remainder = total % 60
         return String(format: "%02d:%02d", minutes, remainder)
+    }
+}
+
+private struct RestTimerPreferenceRecord: Decodable {
+    let restTimerDurationSeconds: Int
+
+    enum CodingKeys: String, CodingKey {
+        case restTimerDurationSeconds = "rest_timer_duration_seconds"
+    }
+}
+
+private struct RestTimerPreferenceUpsert: Encodable {
+    let userID: UUID
+    let restTimerDurationSeconds: Int
+    let updatedAt: Date
+
+    enum CodingKeys: String, CodingKey {
+        case userID = "user_id"
+        case restTimerDurationSeconds = "rest_timer_duration_seconds"
+        case updatedAt = "updated_at"
     }
 }

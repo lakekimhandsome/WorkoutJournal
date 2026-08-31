@@ -8,6 +8,7 @@ struct RootView: View {
     @Environment(\.locale) private var locale
     @State private var path = NavigationPath()
     @State private var isSettingsPresented = false
+    @State private var isKeyboardPresented = false
 
     var body: some View {
         @Bindable var sessionStore = sessionStore
@@ -57,7 +58,10 @@ struct RootView: View {
             .navigationSubtitle(sessionCountSubtitle)
             .navigationDestination(for: WorkoutSession.ID.self) { id in
                 if let index = sessionStore.sessions.firstIndex(where: { $0.id == id }) {
-                    SessionDetailView(session: $sessionStore.sessions[index])
+                    SessionDetailView(
+                        session: $sessionStore.sessions[index],
+                        isKeyboardPresented: $isKeyboardPresented
+                    )
                 }
             }
             .toolbar {
@@ -102,7 +106,7 @@ struct RootView: View {
                 }
             }
             .sheet(isPresented: $isSettingsPresented) {
-                SettingsView()
+                SettingsView(isKeyboardPresented: $isKeyboardPresented)
             }
             .alert("Sign In", isPresented: Binding(
                 get: { authManager.errorMessage != nil },
@@ -127,13 +131,22 @@ struct RootView: View {
                     .ignoresSafeArea()
             }
         }
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            RestTimerView()
-                .frame(maxWidth: .infinity)
-                .padding(.horizontal, 16)
-                .padding(.top, 8)
-                .padding(.bottom, 8)
+        .onChange(of: isKeyboardPresented) { _, isPresented in
+            if isPresented {
+                timerManager.isExpanded = false
+            }
         }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            if !isKeyboardPresented {
+                RestTimerView()
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, 16)
+                    .padding(.top, 8)
+                    .padding(.bottom, 8)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+        .animation(.snappy, value: isKeyboardPresented)
     }
 
     private func startNewSession(category: String) {

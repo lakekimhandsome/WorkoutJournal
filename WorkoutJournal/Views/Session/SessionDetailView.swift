@@ -7,6 +7,7 @@ import SwiftUI
 
 struct SessionDetailView: View {
     @Binding var session: WorkoutSession
+    @Binding var isKeyboardPresented: Bool
     @Environment(TimerManager.self) private var timerManager
     @Environment(CategoryStore.self) private var categoryStore
     @Environment(SessionStore.self) private var sessionStore
@@ -14,6 +15,7 @@ struct SessionDetailView: View {
     @State private var newExerciseName = ""
     @State private var selectedPreviousSessionID: WorkoutSession.ID?
     @State private var exerciseNotePrompts: [Exercise.ID: String] = [:]
+    @FocusState private var isTextInputFocused: Bool
 
     var body: some View {
         List {
@@ -21,7 +23,8 @@ struct SessionDetailView: View {
                 ForEach($session.exercises) { $exercise in
                     ExerciseRow(
                         exercise: $exercise,
-                        notePrompt: exerciseNotePrompts[exercise.id]
+                        notePrompt: exerciseNotePrompts[exercise.id],
+                        isTextInputFocused: $isTextInputFocused
                     ) {
                         timerManager.startRestAfterSet()
                     } onDelete: {
@@ -37,6 +40,8 @@ struct SessionDetailView: View {
             Section {
                 HStack {
                     TextField("Exercise Name", text: $newExerciseName)
+                        .focused($isTextInputFocused)
+                        .submitLabel(.done)
                         .onSubmit(addExercise)
 
                     Button("Add", action: addExercise)
@@ -81,11 +86,18 @@ struct SessionDetailView: View {
                 }
             }
         }
+        .scrollDismissesKeyboard(.interactively)
         .navigationTitle(session.date.formatted(.dateTime.year().month().day().weekday().locale(locale)))
         .navigationSubtitle(session.category)
         .navigationBarTitleDisplayMode(.inline)
         .onChange(of: session.category) {
             selectedPreviousSessionID = nil
+        }
+        .onChange(of: isTextInputFocused) { _, isFocused in
+            isKeyboardPresented = isFocused
+        }
+        .onDisappear {
+            isKeyboardPresented = false
         }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -156,6 +168,7 @@ struct SessionDetailView: View {
         guard !name.isEmpty else { return }
         session.exercises.append(Exercise(name: name))
         newExerciseName = ""
+        isTextInputFocused = false
     }
 
     private func addExercise(from previousExercise: Exercise) {
@@ -262,6 +275,7 @@ private struct PreviousSessionNavigation: View {
 private struct ExerciseRow: View {
     @Binding var exercise: Exercise
     let notePrompt: String?
+    let isTextInputFocused: FocusState<Bool>.Binding
     var onSetIncremented: () -> Void
     var onDelete: () -> Void
 
@@ -270,6 +284,7 @@ private struct ExerciseRow: View {
             HStack {
                 TextField("Exercise Name", text: $exercise.name)
                     .fontWeight(.medium)
+                    .focused(isTextInputFocused)
 
                 Stepper {
                     Text("\(exercise.setCount) sets")
@@ -303,6 +318,7 @@ private struct ExerciseRow: View {
                 .foregroundStyle(.secondary)
                 .lineLimit(1...3)
                 .fixedSize(horizontal: false, vertical: true)
+                .focused(isTextInputFocused)
         }
         .padding(.vertical, 2)
         .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
@@ -340,9 +356,13 @@ private func exerciseSetSummary(for exercise: Exercise) -> String? {
 
 #Preview {
     @Previewable @State var session = MockData.sessions[0]
+    @Previewable @State var isKeyboardPresented = false
 
     NavigationStack {
-        SessionDetailView(session: $session)
+        SessionDetailView(
+            session: $session,
+            isKeyboardPresented: $isKeyboardPresented
+        )
     }
     .environment(TimerManager())
     .environment(CategoryStore.shared)
