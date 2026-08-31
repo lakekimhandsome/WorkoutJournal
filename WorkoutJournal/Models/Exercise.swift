@@ -20,7 +20,7 @@ struct Exercise: Identifiable, Hashable, Codable {
         id: UUID = UUID(),
         name: String,
         notes: String = "",
-        sets: [WorkoutSet] = [.new()]
+        sets: [WorkoutSet] = []
     ) {
         self.id = id
         self.name = name

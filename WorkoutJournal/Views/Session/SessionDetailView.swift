@@ -9,29 +9,29 @@ struct SessionDetailView: View {
     @Binding var session: WorkoutSession
     @Environment(TimerManager.self) private var timerManager
     @Environment(CategoryStore.self) private var categoryStore
+    @Environment(SessionStore.self) private var sessionStore
     @Environment(\.locale) private var locale
     @State private var newExerciseName = ""
+    @State private var selectedPreviousSessionID: WorkoutSession.ID?
+    @State private var exerciseNotePrompts: [Exercise.ID: String] = [:]
 
     var body: some View {
         List {
             Section {
                 ForEach($session.exercises) { $exercise in
-                    ExerciseRow(exercise: $exercise) {
+                    ExerciseRow(
+                        exercise: $exercise,
+                        notePrompt: exerciseNotePrompts[exercise.id]
+                    ) {
                         timerManager.startRestAfterSet()
                     } onDelete: {
-                        session.exercises.removeAll { $0.id == exercise.id }
+                        let id = exercise.id
+                        session.exercises.removeAll { $0.id == id }
+                        exerciseNotePrompts[id] = nil
                     }
                 }
             } header: {
-                HStack {
-                    Text("Exercises")
-
-                    Spacer()
-
-                    Text("\(session.exercises.count) exercises · \(totalSetCount) sets")
-                        .monospacedDigit()
-                        .textCase(nil)
-                }
+                Text("Exercises")
             }
 
             Section {
@@ -43,10 +43,50 @@ struct SessionDetailView: View {
                         .disabled(!canAddExercise)
                 }
             }
+
+            if let displayedPreviousSession {
+                Section {
+                    if !displayedPreviousSession.notes.isEmpty {
+                        Text(displayedPreviousSession.notes)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+
+                    if previousSessions.count > 1 {
+                        PreviousSessionNavigation(
+                            position: selectedPreviousSessionIndex + 1,
+                            total: previousSessions.count,
+                            canShowOlder: selectedPreviousSessionIndex < previousSessions.count - 1,
+                            canShowNewer: selectedPreviousSessionIndex > 0,
+                            onShowOlder: showOlderSession,
+                            onShowNewer: showNewerSession
+                        )
+                    }
+
+                    ForEach(displayedPreviousSession.exercises) { exercise in
+                        Button {
+                            addExercise(from: exercise)
+                        } label: {
+                            PreviousExerciseRow(exercise: exercise)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                } header: {
+                    Text(
+                        displayedPreviousSession.date,
+                        format: .dateTime.year().month().day().weekday()
+                    )
+                    .textCase(nil)
+                }
+            }
         }
         .navigationTitle(session.date.formatted(.dateTime.year().month().day().weekday().locale(locale)))
         .navigationSubtitle(session.category)
         .navigationBarTitleDisplayMode(.inline)
+        .onChange(of: session.category) {
+            selectedPreviousSessionID = nil
+        }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
@@ -70,8 +110,31 @@ struct SessionDetailView: View {
         }
     }
 
-    private var totalSetCount: Int {
-        session.exercises.reduce(0) { $0 + $1.setCount }
+    private var previousSessions: [WorkoutSession] {
+        sessionStore.sessions
+            .filter { candidate in
+                candidate.id != session.id
+                    && candidate.category == session.category
+                    && candidate.date < session.date
+            }
+            .sorted { lhs, rhs in
+                if lhs.date != rhs.date {
+                    return lhs.date > rhs.date
+                }
+
+                return lhs.id.uuidString < rhs.id.uuidString
+            }
+    }
+
+    private var selectedPreviousSessionIndex: Int {
+        guard let selectedPreviousSessionID else { return 0 }
+        return previousSessions.firstIndex { $0.id == selectedPreviousSessionID } ?? 0
+    }
+
+    private var displayedPreviousSession: WorkoutSession? {
+        previousSessions.indices.contains(selectedPreviousSessionIndex)
+            ? previousSessions[selectedPreviousSessionIndex]
+            : nil
     }
 
     private var availableCategories: [String] {
@@ -94,10 +157,111 @@ struct SessionDetailView: View {
         session.exercises.append(Exercise(name: name))
         newExerciseName = ""
     }
+
+    private func addExercise(from previousExercise: Exercise) {
+        let exercise = Exercise(name: previousExercise.name)
+        let note = previousExercise.notes.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        session.exercises.append(exercise)
+
+        if !note.isEmpty {
+            exerciseNotePrompts[exercise.id] = note
+        }
+    }
+
+    private func showOlderSession() {
+        let index = selectedPreviousSessionIndex + 1
+        guard previousSessions.indices.contains(index) else { return }
+
+        withAnimation(.snappy) {
+            selectedPreviousSessionID = previousSessions[index].id
+        }
+    }
+
+    private func showNewerSession() {
+        let index = selectedPreviousSessionIndex - 1
+        guard previousSessions.indices.contains(index) else { return }
+
+        withAnimation(.snappy) {
+            selectedPreviousSessionID = previousSessions[index].id
+        }
+    }
+}
+
+private struct PreviousExerciseRow: View {
+    let exercise: Exercise
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text(exercise.name)
+                    .fontWeight(.medium)
+
+                Spacer()
+
+                Text("\(exercise.setCount) sets")
+                    .font(.subheadline)
+                    .monospacedDigit()
+                    .foregroundStyle(.secondary)
+
+                Image(systemName: "plus.circle")
+                    .foregroundStyle(.tint)
+            }
+
+            if let setSummary = exerciseSetSummary(for: exercise) {
+                Label(setSummary, systemImage: "dumbbell.fill")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            if !exercise.notes.isEmpty {
+                Text(exercise.notes)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(.vertical, 2)
+        .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
+        .accessibilityElement(children: .combine)
+    }
+}
+
+private struct PreviousSessionNavigation: View {
+    let position: Int
+    let total: Int
+    let canShowOlder: Bool
+    let canShowNewer: Bool
+    let onShowOlder: () -> Void
+    let onShowNewer: () -> Void
+
+    var body: some View {
+        HStack {
+            Button("Older", systemImage: "chevron.backward", action: onShowOlder)
+                .labelStyle(.iconOnly)
+                .disabled(!canShowOlder)
+
+            Spacer()
+
+            Text("\(position)/\(total)")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .monospacedDigit()
+
+            Spacer()
+
+            Button("Newer", systemImage: "chevron.forward", action: onShowNewer)
+                .labelStyle(.iconOnly)
+                .disabled(!canShowNewer)
+        }
+        .buttonStyle(.borderless)
+        .listRowSeparator(.hidden)
+    }
 }
 
 private struct ExerciseRow: View {
     @Binding var exercise: Exercise
+    let notePrompt: String?
     var onSetIncremented: () -> Void
     var onDelete: () -> Void
 
@@ -117,7 +281,7 @@ private struct ExerciseRow: View {
                     exercise.setCount += 1
                     onSetIncremented()
                 } onDecrement: {
-                    guard exercise.setCount > 1 else { return }
+                    guard exercise.setCount > 0 else { return }
                     exercise.setCount -= 1
                 }
                 .fixedSize()
@@ -130,7 +294,11 @@ private struct ExerciseRow: View {
                     .lineLimit(1)
             }
 
-            TextField("Add a note", text: $exercise.notes, axis: .vertical)
+            TextField(
+                notePrompt ?? String(localized: "Add a note"),
+                text: $exercise.notes,
+                axis: .vertical
+            )
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .lineLimit(1...3)
@@ -144,26 +312,30 @@ private struct ExerciseRow: View {
     }
 
     private var setSummary: String? {
-        var summaries: [(text: String, count: Int)] = []
-
-        for set in exercise.sets {
-            guard let text = set.displayText else { continue }
-
-            if let index = summaries.firstIndex(where: { $0.text == text }) {
-                summaries[index].count += 1
-            } else {
-                summaries.append((text, 1))
-            }
-        }
-
-        guard !summaries.isEmpty else { return nil }
-
-        return summaries
-            .map { summary in
-                summary.count > 1 ? "\(summary.text) × \(summary.count)" : summary.text
-            }
-            .joined(separator: "  ·  ")
+        exerciseSetSummary(for: exercise)
     }
+}
+
+private func exerciseSetSummary(for exercise: Exercise) -> String? {
+    var summaries: [(text: String, count: Int)] = []
+
+    for set in exercise.sets {
+        guard let text = set.displayText else { continue }
+
+        if let index = summaries.firstIndex(where: { $0.text == text }) {
+            summaries[index].count += 1
+        } else {
+            summaries.append((text, 1))
+        }
+    }
+
+    guard !summaries.isEmpty else { return nil }
+
+    return summaries
+        .map { summary in
+            summary.count > 1 ? "\(summary.text) × \(summary.count)" : summary.text
+        }
+        .joined(separator: "  ·  ")
 }
 
 #Preview {
@@ -174,4 +346,5 @@ private struct ExerciseRow: View {
     }
     .environment(TimerManager())
     .environment(CategoryStore.shared)
+    .environment(SessionStore.shared)
 }
